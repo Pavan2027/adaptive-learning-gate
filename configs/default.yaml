@@ -31,6 +31,9 @@ stream:
   shuffle: true                # Shuffle the stream before injection
   label_noise_rate: 0.0        # Fraction of labels to corrupt [0.0, 1.0]
   feature_corruption_rate: 0.0 # Fraction of features to corrupt [0.0, 1.0]
+  redundancy_rate: 0.0         # Fraction of repeated/redundant samples [0.0, 1.0]
+  shift_type: none             # Options: none | class_shift | feature_shift
+  num_segments: 1              # Number of stream distribution segments
 
 # ── Adaptive Learning Gate (Phase 5+) ────────────────────────────────────────
 gate:

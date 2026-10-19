@@ -97,6 +97,21 @@ class StreamConfig(BaseModel):
         le=1.0,
         description="Fraction of feature vectors to corrupt (e.g. Gaussian noise). In [0.0, 1.0].",
     )
+    redundancy_rate: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Fraction of samples to duplicate/repeat in the stream. In [0.0, 1.0].",
+    )
+    shift_type: str = Field(
+        default="none",
+        description="Distribution shift pattern: 'none', 'class_shift', 'feature_shift'.",
+    )
+    num_segments: int = Field(
+        default=1,
+        ge=1,
+        description="Number of stream segments across which distribution shifts occur.",
+    )
 
 
 class GateConfig(BaseModel):
