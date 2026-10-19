@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "adaptive-learning-gate"
+version = "0.1.0"
+description = "An adaptive gating framework for selective updates in continual neural network training."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Pavan" }]
+keywords = ["continual-learning", "adaptive-learning", "sample-selection", "deep-learning"]
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Intended Audience :: Science/Research",
+    "Development Status :: 2 - Pre-Alpha",
+]
+
+dependencies = [
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "numpy>=1.24",
+    # PyTorch is a required runtime dependency for training, but MUST be installed
+    # manually with your GPU-specific CUDA version. See README.md for instructions.
+    # Do not install via this pyproject alone — 'pip install -e .' will pull the CPU build.
+    "torch>=2.0",
+    "torchvision>=0.15",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+alg-config = "alg.scripts.show_config:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/alg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.hatch.metadata]
+allow-direct-references = true

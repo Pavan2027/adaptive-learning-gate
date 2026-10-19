@@ -1,0 +1,16 @@
+# Adaptive Learning Gate — Core Dependencies
+#
+# NOTE ON PYTORCH:
+# PyTorch should be installed separately matching your system's CUDA version
+# BEFORE installing this file, to avoid installing the default CPU wheel.
+#
+# Example for CUDA 12.1:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# Example for CUDA 11.8:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+# Example for CPU only:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+pyyaml>=6.0
+pydantic>=2.0
+numpy>=1.24

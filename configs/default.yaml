@@ -1,0 +1,46 @@
+# Adaptive Learning Gate — Default Configuration
+# All important hyperparameters are defined here.
+# Override any field by passing a custom YAML file to scripts/show_config.py.
+
+# ── Dataset ──────────────────────────────────────────────────────────────────
+dataset:
+  name: cifar10                # Options: cifar10 | fashion_mnist | mnist
+  root: data/                  # Local directory to store dataset files
+  download: true               # Whether to auto-download if not present
+
+# ── Model ────────────────────────────────────────────────────────────────────
+model:
+  architecture: cnn            # Options: cnn | mlp
+  hidden_dims: [256, 128]      # Hidden layer sizes for MLP architecture
+
+# ── Reproducibility ──────────────────────────────────────────────────────────
+seed: 42                       # Global random seed (Python, NumPy, PyTorch)
+
+# ── Training ─────────────────────────────────────────────────────────────────
+batch_size: 128
+epochs: 5                      # Number of baseline training epochs
+
+optimizer:
+  name: adam                   # Options: adam | sgd
+  lr: 0.001
+  weight_decay: 0.0001
+
+# ── Stream Simulation (Phase 3+) ─────────────────────────────────────────────
+stream:
+  size: 10000                  # Number of samples in the training stream
+  shuffle: true                # Shuffle the stream before injection
+  label_noise_rate: 0.0        # Fraction of labels to corrupt [0.0, 1.0]
+  feature_corruption_rate: 0.0 # Fraction of features to corrupt [0.0, 1.0]
+
+# ── Adaptive Learning Gate (Phase 5+) ────────────────────────────────────────
+gate:
+  learn_threshold: 0.6         # utility >= learn_threshold  → LEARN
+  ignore_threshold: 0.3        # utility <= ignore_threshold → IGNORE
+                               # otherwise                  → DEFER
+  defer_queue_capacity: 500    # Maximum number of deferred samples (0 = unlimited)
+
+# ── Output Paths ─────────────────────────────────────────────────────────────
+output:
+  log_dir: logs/               # Training logs
+  checkpoint_dir: checkpoints/ # Model checkpoints (.pt files)
+  results_dir: results/        # Experiment results (JSON, CSV)

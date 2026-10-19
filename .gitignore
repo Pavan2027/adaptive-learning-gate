@@ -218,3 +218,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project
+agents/
+
+# Adaptive Learning Gate runtime artifacts
+/data/
+/results/
+/experiments/
+/checkpoints/
+/logs/
+*.pt
+*.pth
+*.ckpt
+!research/data/
