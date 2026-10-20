@@ -140,6 +140,12 @@ Generate and inspect a simulated stream with synthetic label noise and feature c
 python scripts/inspect_stream.py --label-noise 0.20 --feature-corruption 0.15 --export-manifest
 ```
 
+### Analyze Learning Signals (Phase 4)
+Evaluate predictive uncertainty, prototype novelty, and reliability on the stream:
+```powershell
+python scripts/analyze_signals.py --stream-size 2000
+```
+
 ---
 
 ## 5. Development Status
@@ -147,7 +153,7 @@ python scripts/inspect_stream.py --label-noise 0.20 --feature-corruption 0.15 --
 - [x] **Phase 1: Foundation** — Project structure, Pydantic v2 configuration system, deterministic seeding utility, and test suite.
 - [x] **Phase 2: Baseline** — Conventional training baseline on CIFAR-10 / Fashion-MNIST (update-on-every-sample) with best checkpointing and held-out test evaluation.
 - [x] **Phase 3: Stream Simulator** — Continual streaming pipeline with controlled label noise, feature perturbations, redundancy, and segment shifts.
-- [ ] **Phase 4: Learning Signals** — Per-sample uncertainty, novelty, and reliability extractors.
+- [x] **Phase 4: Learning Signals** — Per-sample uncertainty, prototype novelty, and reliability extractors.
 - [ ] **Phase 5: Adaptive Gate** — Rule-based utility gate and bounded deferral queue.
 - [ ] **Phase 6: Continual Training** — Gated continual training loop with selective updates.
 - [ ] **Phase 7: Experiments** — Multi-seed comparative evaluations against standard baselines.
