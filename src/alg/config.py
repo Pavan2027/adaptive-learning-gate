@@ -118,7 +118,7 @@ class GateConfig(BaseModel):
     """Adaptive Learning Gate thresholds and defer queue settings."""
 
     learn_threshold: float = Field(
-        default=0.6,
+        default=0.5,
         ge=0.0,
         le=1.0,
         description=(

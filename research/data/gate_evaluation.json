@@ -1,0 +1,46 @@
+{
+  "stream_size": 2000,
+  "learn_threshold": 0.5,
+  "ignore_threshold": 0.3,
+  "summary": {
+    "total_decisions": 2000,
+    "actions": {
+      "learn": 712,
+      "learn_percentage": 35.6,
+      "ignore": 655,
+      "ignore_percentage": 32.75,
+      "defer": 633,
+      "defer_percentage": 31.65
+    },
+    "queue": {
+      "current_size": 500,
+      "capacity": 500,
+      "overflow_policy": "drop_oldest",
+      "total_enqueued": 633,
+      "total_dequeued": 0,
+      "overflow_drops": 133
+    }
+  },
+  "condition_breakdown": {
+    "clean": {
+      "LEARN": 596,
+      "IGNORE": 183,
+      "DEFER": 566,
+      "total": 1345
+    },
+    "noisy_label": {
+      "LEARN": 14,
+      "IGNORE": 368,
+      "DEFER": 10,
+      "total": 392
+    },
+    "corrupted_feat": {
+      "LEARN": 102,
+      "IGNORE": 104,
+      "DEFER": 57,
+      "total": 263
+    }
+  },
+  "noisy_label_interception_rate": 96.43,
+  "clean_admission_rate": 44.31
+}

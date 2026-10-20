@@ -1,15 +1,25 @@
 """
-Adaptive Learning Gate logic and defer queue.
+Adaptive Learning Gate modules and quarantine queue.
 
-Implemented in Phase 5 (Adaptive Gate).
-
-Planned contents:
-- GateAction enum: LEARN | IGNORE | DEFER
-- Rule-based gate using utility score + configurable thresholds:
-    utility(x) = estimated_benefit(x) - estimated_harm(x)
-    if utility >= learn_threshold  → LEARN
-    if utility <= ignore_threshold → IGNORE
-    otherwise                      → DEFER
-- Bounded defer queue with overflow handling
-- Gate decision logging (every decision records action + reason)
+Exports:
+- GateAction: Action enum (LEARN, IGNORE, DEFER).
+- ReasonCode: Audit reason codes.
+- GateDecision: Decision dataclass storing complete evaluation record.
+- RuleBasedGatePolicy: Mathematical utility decision engine.
+- DeferQueue: Bounded quarantine queue with overflow policies.
+- AdaptiveLearningGate: Main gating coordinator.
 """
+
+from alg.gating.decision import GateAction, GateDecision, ReasonCode
+from alg.gating.defer_queue import DeferQueue
+from alg.gating.gate import AdaptiveLearningGate
+from alg.gating.policy import RuleBasedGatePolicy
+
+__all__ = [
+    "GateAction",
+    "ReasonCode",
+    "GateDecision",
+    "RuleBasedGatePolicy",
+    "DeferQueue",
+    "AdaptiveLearningGate",
+]
