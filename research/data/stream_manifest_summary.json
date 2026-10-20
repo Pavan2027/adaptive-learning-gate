@@ -1,0 +1,16 @@
+{
+  "total_samples": 10000,
+  "clean_samples": 6833,
+  "clean_percentage": 68.33,
+  "noisy_label_samples": 1966,
+  "noisy_label_percentage": 19.66,
+  "corrupted_feature_samples": 1529,
+  "corrupted_feature_percentage": 15.29,
+  "redundant_samples": 0,
+  "redundant_percentage": 0.0,
+  "segments": {
+    "0": 10000
+  },
+  "seed": 42,
+  "shift_type": "none"
+}
