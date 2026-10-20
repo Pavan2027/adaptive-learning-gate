@@ -1,0 +1,44 @@
+{
+  "num_samples_analyzed": 2000,
+  "metrics": {
+    "clean": {
+      "uncertainty": {
+        "mean": 0.2936,
+        "std": 0.2194
+      },
+      "reliability": {
+        "mean": 0.8514,
+        "std": 0.3024
+      },
+      "novelty": {
+        "mean": 0.1277,
+        "std": 0.0459
+      }
+    },
+    "noisy_label": {
+      "uncertainty": {
+        "mean": 0.3043,
+        "std": 0.2261
+      },
+      "reliability": {
+        "mean": 0.0734,
+        "std": 0.1986
+      }
+    },
+    "corrupted_feature": {
+      "uncertainty": {
+        "mean": 0.4174,
+        "std": 0.2128
+      },
+      "reliability": {
+        "mean": 0.5177,
+        "std": 0.4374
+      },
+      "novelty": {
+        "mean": 0.151,
+        "std": 0.0419
+      }
+    }
+  },
+  "reliability_separation_gap": 0.778
+}
