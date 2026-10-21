@@ -146,15 +146,53 @@ Evaluate predictive uncertainty, prototype novelty, and reliability on the strea
 python scripts/analyze_signals.py --stream-size 2000
 ```
 
+### Evaluate Adaptive Learning Gate (Phase 5)
+Run the decision policy and bounded quarantine queue on streaming inputs:
+```powershell
+python scripts/evaluate_gate.py --stream-size 2000
+```
+
+### Continual Streaming Adaptation (Phase 6)
+Run selective continual learning with the adaptive gate:
+```powershell
+python scripts/run_stream.py --mode compare --stream-size 2000 --batch-size 64
+```
+
+### Run Systematic Experiment Matrix & Ablations (Phase 7)
+Execute the complete comparative benchmark and component ablation suite:
+```powershell
+# Run primary comparison methods on perturbed stream
+python scripts/run_experiments.py --condition noisy_stream --methods update_all,random,uncertainty_only,gated_full --stream-size 2000
+
+# Run full component ablations
+python scripts/run_experiments.py --condition noisy_stream --run-ablations --stream-size 2000
+
+# Run extreme noise stress test (40% noise)
+python scripts/run_experiments.py --condition high_noise_stream --methods update_all,uncertainty_only,gated_full --stream-size 2000
+
+# Aggregate statistical LaTeX and Markdown tables
+python scripts/aggregate_results.py --latex
+```
+
+### Generate Visualizations & Research Summary (Phase 8)
+Generate 300 DPI publication-ready figures and comprehensive markdown reports:
+```powershell
+# Generate all publication figures into results/figures and research/plots
+python scripts/plot_results.py
+
+# Generate statistical summary report
+python scripts/summarize_results.py
+```
+
 ---
 
 ## 5. Development Status
 
 - [x] **Phase 1: Foundation** — Project structure, Pydantic v2 configuration system, deterministic seeding utility, and test suite.
-- [x] **Phase 2: Baseline** — Conventional training baseline on CIFAR-10 / Fashion-MNIST (update-on-every-sample) with best checkpointing and held-out test evaluation.
+- [x] **Phase 2: Baseline** — Conventional training baseline on CIFAR-10 (update-on-every-sample) with best checkpointing and held-out test evaluation.
 - [x] **Phase 3: Stream Simulator** — Continual streaming pipeline with controlled label noise, feature perturbations, redundancy, and segment shifts.
-- [x] **Phase 4: Learning Signals** — Per-sample uncertainty, prototype novelty, and reliability extractors.
-- [ ] **Phase 5: Adaptive Gate** — Rule-based utility gate and bounded deferral queue.
-- [ ] **Phase 6: Continual Training** — Gated continual training loop with selective updates.
-- [ ] **Phase 7: Experiments** — Multi-seed comparative evaluations against standard baselines.
-- [ ] **Phase 8: Analysis** — Ablations, Pareto frontiers (accuracy vs. compute), visualizations, and paper reporting.
+- [x] **Phase 4: Learning Signals** — Per-sample predictive uncertainty, prototype novelty, and composite reliability extractors.
+- [x] **Phase 5: Adaptive Gate** — Multi-signal utility gate, auditable decision policies, and bounded quarantine deferral queue.
+- [x] **Phase 6: Continual Training** — Gated continual training loop with selective updates and memory centroid updates.
+- [x] **Phase 7: Experiments** — Systematic comparative benchmarks across stream conditions and one-factor-at-a-time component ablations.
+- [x] **Phase 8: Analysis** — 300 DPI publication figures, Pareto frontiers, statistical summaries, and full research paper draft.
