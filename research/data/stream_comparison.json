@@ -1,0 +1,42 @@
+{
+  "conventional": {
+    "total_samples": 100,
+    "total_updates": 4,
+    "samples_learned": 100,
+    "samples_ignored": 0,
+    "samples_deferred": 0,
+    "noise_ingested": 21,
+    "clean_learned": 69,
+    "final_test_accuracy": 72.44,
+    "final_test_f1": 72.56,
+    "compute_savings_pct": 0.0,
+    "trajectory": [
+      {
+        "sample": 100,
+        "test_acc": 0.7244,
+        "test_f1": 0.7256,
+        "update_steps": 4
+      }
+    ]
+  },
+  "gated": {
+    "total_samples": 100,
+    "total_updates": 4,
+    "samples_learned": 42,
+    "samples_ignored": 30,
+    "samples_deferred": 28,
+    "noise_ingested": 2,
+    "clean_learned": 38,
+    "final_test_accuracy": 73.81,
+    "final_test_f1": 73.83,
+    "compute_savings_pct": 0.0,
+    "trajectory": [
+      {
+        "sample": 100,
+        "test_acc": 0.7381,
+        "test_f1": 0.7383,
+        "update_steps": 4
+      }
+    ]
+  }
+}

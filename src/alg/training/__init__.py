@@ -8,5 +8,14 @@ Exports:
 """
 
 from alg.training.baseline import BaselineTrainer, load_checkpoint, save_checkpoint
+from alg.training.stream_trainer import StreamMode, StreamStepRecord, StreamTrainer, StreamTrainingResult
 
-__all__ = ["BaselineTrainer", "save_checkpoint", "load_checkpoint"]
+__all__ = [
+    "BaselineTrainer",
+    "StreamTrainer",
+    "StreamMode",
+    "StreamStepRecord",
+    "StreamTrainingResult",
+    "save_checkpoint",
+    "load_checkpoint",
+]
