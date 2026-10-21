@@ -69,6 +69,7 @@ class StreamTrainingResult:
     accuracy_trajectory: list[dict[str, Any]] = field(default_factory=list)
     action_breakdown: dict[str, int] = field(default_factory=dict)
     compute_savings_pct: float = 0.0
+    sample_savings_pct: float = 0.0
 
 
 class StreamTrainer:
@@ -379,6 +380,11 @@ class StreamTrainer:
             if mode == StreamMode.GATED
             else 0.0
         )
+        sample_savings = (
+            max(0.0, (1.0 - (samples_learned / max(1, total_samples)))) * 100
+            if mode == StreamMode.GATED
+            else 0.0
+        )
 
         return StreamTrainingResult(
             mode=mode,
@@ -400,4 +406,5 @@ class StreamTrainer:
                 "DEFER": samples_deferred,
             },
             compute_savings_pct=round(compute_savings, 2),
+            sample_savings_pct=round(sample_savings, 2),
         )

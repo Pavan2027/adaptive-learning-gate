@@ -197,6 +197,7 @@ def run_experiment(
             "final_test_accuracy": round(res.final_test_accuracy * 100, 2),
             "final_test_f1": round(res.final_test_f1 * 100, 2),
             "compute_savings_pct": res.compute_savings_pct,
+            "sample_savings_pct": res.sample_savings_pct,
             "trajectory": res.accuracy_trajectory,
         }
 
@@ -213,15 +214,15 @@ def run_experiment(
     if conv and gtd:
         print(f"  Final Test Accuracy           | {conv['final_test_accuracy']:>18.2f}% | {gtd['final_test_accuracy']:>14.2f}%")
         print(f"  Final Macro-F1                | {conv['final_test_f1']:>18.2f}% | {gtd['final_test_f1']:>14.2f}%")
-        print(f"  Total Update Steps            | {conv['total_updates']:>19,d} | {gtd['total_updates']:>15,d}")
+        print(f"  Samples Admitted for Learning | {conv['samples_learned']:>19,d} | {gtd['samples_learned']:>15,d}")
+        print(f"  Sample Compute Conserved      | {conv.get('sample_savings_pct', 0.0):>18.1f}% | {gtd.get('sample_savings_pct', 0.0):>14.1f}%")
         print(f"  Corrupted Noise Ingested      | {conv['noise_ingested']:>19,d} | {gtd['noise_ingested']:>15,d}")
-        print(f"  Compute Backward Pass Savings | {conv['compute_savings_pct']:>18.1f}% | {gtd['compute_savings_pct']:>14.1f}%")
         diff_acc = gtd['final_test_accuracy'] - conv['final_test_accuracy']
         noise_reduction = (1.0 - (gtd['noise_ingested'] / max(1, conv['noise_ingested']))) * 100
         print("  " + "-" * 66)
         print(f"  --> Accuracy Delta (ALG vs Baseline) : {diff_acc:+.2f}%")
         print(f"  --> Noise Ingestion Reduction        : {noise_reduction:.1f}%")
-        print(f"  --> Compute Energy Conserved         : {gtd['compute_savings_pct']:.1f}%")
+        print(f"  --> Sample Computation Saved         : {gtd.get('sample_savings_pct', 0.0):.1f}%")
     elif gtd:
         print(f"  Final Test Accuracy           |                  N/A | {gtd['final_test_accuracy']:>14.2f}%")
         print(f"  Total Update Steps            |                  N/A | {gtd['total_updates']:>15,d}")

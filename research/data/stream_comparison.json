@@ -1,41 +1,77 @@
 {
   "conventional": {
-    "total_samples": 100,
-    "total_updates": 4,
-    "samples_learned": 100,
+    "total_samples": 2000,
+    "total_updates": 32,
+    "samples_learned": 2000,
     "samples_ignored": 0,
     "samples_deferred": 0,
-    "noise_ingested": 21,
-    "clean_learned": 69,
-    "final_test_accuracy": 72.44,
-    "final_test_f1": 72.56,
+    "noise_ingested": 392,
+    "clean_learned": 1345,
+    "final_test_accuracy": 70.33,
+    "final_test_f1": 69.86,
     "compute_savings_pct": 0.0,
     "trajectory": [
       {
-        "sample": 100,
-        "test_acc": 0.7244,
-        "test_f1": 0.7256,
-        "update_steps": 4
+        "sample": 512,
+        "test_acc": 0.6932,
+        "test_f1": 0.6958,
+        "update_steps": 8
+      },
+      {
+        "sample": 1024,
+        "test_acc": 0.6751,
+        "test_f1": 0.6776,
+        "update_steps": 16
+      },
+      {
+        "sample": 1536,
+        "test_acc": 0.7127,
+        "test_f1": 0.7092,
+        "update_steps": 24
+      },
+      {
+        "sample": 2000,
+        "test_acc": 0.7033,
+        "test_f1": 0.6986,
+        "update_steps": 32
       }
     ]
   },
   "gated": {
-    "total_samples": 100,
-    "total_updates": 4,
-    "samples_learned": 42,
-    "samples_ignored": 30,
-    "samples_deferred": 28,
-    "noise_ingested": 2,
-    "clean_learned": 38,
-    "final_test_accuracy": 73.81,
-    "final_test_f1": 73.83,
+    "total_samples": 2000,
+    "total_updates": 38,
+    "samples_learned": 686,
+    "samples_ignored": 747,
+    "samples_deferred": 654,
+    "noise_ingested": 17,
+    "clean_learned": 567,
+    "final_test_accuracy": 70.55,
+    "final_test_f1": 69.93,
     "compute_savings_pct": 0.0,
     "trajectory": [
       {
-        "sample": 100,
-        "test_acc": 0.7381,
-        "test_f1": 0.7383,
-        "update_steps": 4
+        "sample": 512,
+        "test_acc": 0.6855,
+        "test_f1": 0.6848,
+        "update_steps": 9
+      },
+      {
+        "sample": 1024,
+        "test_acc": 0.69,
+        "test_f1": 0.6823,
+        "update_steps": 19
+      },
+      {
+        "sample": 1536,
+        "test_acc": 0.6872,
+        "test_f1": 0.679,
+        "update_steps": 28
+      },
+      {
+        "sample": 2000,
+        "test_acc": 0.7055,
+        "test_f1": 0.6993,
+        "update_steps": 38
       }
     ]
   }
