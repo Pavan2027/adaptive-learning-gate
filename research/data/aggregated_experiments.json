@@ -1,0 +1,104 @@
+{
+  "noisy_stream": {
+    "gated_full": {
+      "method_name": "Adaptive Learning Gate (Ours)",
+      "condition_name": "Standard Perturbed Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 74.83,
+        "std": 0.0,
+        "min": 74.83,
+        "max": 74.83,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 74.78,
+        "std": 0.0,
+        "min": 74.78,
+        "max": 74.78,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 2.0,
+        "std": 0.0,
+        "min": 2.0,
+        "max": 2.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 90.48,
+        "std": 0.0,
+        "min": 90.48,
+        "max": 90.48,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 57.0,
+        "std": 0.0,
+        "min": 57.0,
+        "max": 57.0,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 10.55,
+        "std": 0.0,
+        "min": 10.55,
+        "max": 10.55,
+        "count": 1
+      }
+    },
+    "update_all": {
+      "method_name": "Conventional (Update-All)",
+      "condition_name": "Standard Perturbed Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 73.76,
+        "std": 0.0,
+        "min": 73.76,
+        "max": 73.76,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 73.86,
+        "std": 0.0,
+        "min": 73.86,
+        "max": 73.86,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 21.0,
+        "std": 0.0,
+        "min": 21.0,
+        "max": 21.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 11.77,
+        "std": 0.0,
+        "min": 11.77,
+        "max": 11.77,
+        "count": 1
+      }
+    }
+  }
+}

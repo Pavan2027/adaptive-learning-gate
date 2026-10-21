@@ -225,7 +225,8 @@ agents/
 # Adaptive Learning Gate runtime artifacts
 /data/
 /results/
-/experiments/
+/experiments/*
+!/experiments/README.md
 /checkpoints/
 /logs/
 *.pt

@@ -1,0 +1,119 @@
+# Phase 7 — Comparative Experiments and Ablations Configuration Matrix
+# Benchmark: CIFAR-10 Continuous Stream Learning
+
+meta:
+  benchmark: "CIFAR-10 Continual Stream"
+  baseline_checkpoint: "checkpoints/best_model.pt"
+  output_dir: "results/experiments"
+  seeds: [42, 43, 44]
+  default_stream_size: 2000
+  default_batch_size: 64
+
+# ── Stream Conditions ────────────────────────────────────────────────────────
+conditions:
+  noisy_stream:
+    name: "Standard Perturbed Stream"
+    label_noise_rate: 0.20
+    feature_corruption_rate: 0.15
+    redundancy_rate: 0.0
+    description: "Primary evaluation condition with 20% label noise and 15% feature corruption."
+
+  clean_stream:
+    name: "Clean Stream"
+    label_noise_rate: 0.0
+    feature_corruption_rate: 0.0
+    redundancy_rate: 0.0
+    description: "Unperturbed continual stream assessing retention and plasticity under clean data."
+
+  redundant_stream:
+    name: "Redundant Stream"
+    label_noise_rate: 0.0
+    feature_corruption_rate: 0.0
+    redundancy_rate: 0.30
+    description: "Stream containing 30% repeated/redundant samples testing compute-saving filtering."
+
+  high_noise_stream:
+    name: "High Noise Stream"
+    label_noise_rate: 0.40
+    feature_corruption_rate: 0.15
+    redundancy_rate: 0.0
+    description: "Extreme stress condition with 40% label corruption testing gate robustness."
+
+# ── Primary Comparative Methods ──────────────────────────────────────────────
+methods:
+  update_all:
+    name: "Conventional (Update-All)"
+    type: "conventional"
+    description: "Standard continual learner updating unconditionally on every stream sample."
+
+  random:
+    name: "Budget-Matched Random"
+    type: "random"
+    budget_rate: 0.35
+    description: "Uniformly random sample selection matching the full gate update budget (~35%)."
+
+  uncertainty_only:
+    name: "Active Learning (Uncertainty-Only)"
+    type: "uncertainty_only"
+    threshold: 0.35
+    description: "Classical Active Learning baseline selecting samples purely by predictive entropy."
+
+  gated_full:
+    name: "Adaptive Learning Gate (Ours)"
+    type: "gated"
+    learn_threshold: 0.50
+    ignore_threshold: 0.30
+    w_novelty: 0.5
+    w_uncertainty: 0.5
+    w_unreliability: 0.8
+    w_redundancy: 0.2
+    defer_queue_capacity: 500
+    description: "Full proposed multi-signal gate with uncertainty, novelty, reliability, and deferral."
+
+# ── Component Ablations ──────────────────────────────────────────────────────
+ablations:
+  ablation_no_novelty:
+    name: "ALG w/o Novelty (w_nov=0)"
+    type: "gated"
+    learn_threshold: 0.50
+    ignore_threshold: 0.30
+    w_novelty: 0.0
+    w_uncertainty: 0.5
+    w_unreliability: 0.8
+    w_redundancy: 0.2
+    description: "Ablation removing the latent feature prototype novelty signal."
+
+  ablation_no_reliability:
+    name: "ALG w/o Reliability (w_unrel=0)"
+    type: "gated"
+    learn_threshold: 0.50
+    ignore_threshold: 0.30
+    w_novelty: 0.5
+    w_uncertainty: 0.5
+    w_unreliability: 0.0
+    w_redundancy: 0.2
+    use_reliability_coupling: false
+    description: "Ablation disabling reliability checks, allowing high uncertainty on noisy labels to be learned."
+
+  ablation_no_uncertainty:
+    name: "ALG w/o Uncertainty (w_unc=0)"
+    type: "gated"
+    learn_threshold: 0.50
+    ignore_threshold: 0.30
+    w_novelty: 0.5
+    w_uncertainty: 0.0
+    w_unreliability: 0.8
+    w_redundancy: 0.2
+    description: "Ablation removing predictive entropy from benefit estimation."
+
+  ablation_no_defer:
+    name: "ALG w/o Deferral (Hard Gate)"
+    type: "gated"
+    learn_threshold: 0.40
+    ignore_threshold: 0.40
+    allow_no_defer: true
+    w_novelty: 0.5
+    w_uncertainty: 0.5
+    w_unreliability: 0.8
+    w_redundancy: 0.2
+    description: "Hard binary gate forcing immediate LEARN or IGNORE without quarantine or recheck."

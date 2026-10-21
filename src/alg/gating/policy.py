@@ -1,30 +1,28 @@
 """
-Rule-Based Decision Policy for the Adaptive Learning Gate.
+Decision Policies for the Adaptive Learning Gate and Comparative Baselines.
 
-Mathematical Formulation:
-1. Estimated Benefit:
-   B(x) = w_nov * Novelty(x) + w_unc * (Uncertainty(x) * Reliability(x))
-   - Novelty provides value (expanding model representation space).
-   - Uncertainty is ONLY beneficial if Reliability is high (prevents learning from noise!).
+Includes:
+1. `RuleBasedGatePolicy`:
+   The multi-signal decision engine evaluating utility U(x) from benefit B(x) and harm H(x).
+   Supports ablation flags:
+   - `w_novelty=0.0` (ablation: no novelty)
+   - `w_uncertainty=0.0` (ablation: no uncertainty)
+   - `w_unreliability=0.0`, `use_reliability_coupling=False` (ablation: no reliability)
+   - `allow_no_defer=True`, `learn_threshold=0.40, ignore_threshold=0.40` (ablation: hard binary gate, no deferral)
 
-2. Estimated Harm / Risk:
-   H(x) = w_unrel * (1.0 - Reliability(x)) + w_red * ((1.0 - Novelty(x)) * (1.0 - Uncertainty(x)))
-   - Low reliability creates high harm (risk of corrupting model weights).
-   - High redundancy with low uncertainty creates waste (unnecessary compute).
+2. `UncertaintyGatePolicy`:
+   The classical Active Learning baseline: selects samples purely when predictive
+   entropy exceeds a configured threshold, demonstrating susceptibility to label noise.
 
-3. Normalized Utility:
-   Raw_Utility(x) = B(x) - H(x) in [-1.0, 1.0]
-   Utility(x) = (Raw_Utility(x) + 1.0) / 2.0 in [0.0, 1.0]
-
-Decision Rules:
-- If Utility(x) >= learn_threshold  -> LEARN  (HIGH_UTILITY)
-- If Utility(x) <= ignore_threshold -> IGNORE (LOW_RELIABILITY or REDUNDANT)
-- Otherwise                         -> DEFER  (AMBIGUOUS_DEFERRED)
+3. `RandomGatePolicy`:
+   The budget-matched random baseline: admits samples with a uniform probability
+   matching the compute budget of the full gate.
 """
 
 from __future__ import annotations
 
 import math
+import random
 from typing import Any
 
 from alg.gating.decision import GateAction, GateDecision, ReasonCode
@@ -44,8 +42,10 @@ class RuleBasedGatePolicy:
         w_uncertainty: float = 0.5,
         w_unreliability: float = 0.8,
         w_redundancy: float = 0.2,
+        allow_no_defer: bool = False,
+        use_reliability_coupling: bool = True,
     ) -> None:
-        if ignore_threshold >= learn_threshold:
+        if not allow_no_defer and ignore_threshold >= learn_threshold:
             raise ValueError(
                 f"ignore_threshold ({ignore_threshold}) must be strictly less than "
                 f"learn_threshold ({learn_threshold}) to maintain a valid DEFER interval."
@@ -57,6 +57,8 @@ class RuleBasedGatePolicy:
         self.w_uncertainty = w_uncertainty
         self.w_unreliability = w_unreliability
         self.w_redundancy = w_redundancy
+        self.allow_no_defer = allow_no_defer
+        self.use_reliability_coupling = use_reliability_coupling
 
     def evaluate(
         self,
@@ -94,8 +96,8 @@ class RuleBasedGatePolicy:
             )
 
         # 2. Compute Benefit B(x)
-        # Note: uncertainty only provides benefit when reliability is high
-        effective_uncertainty = u * r
+        # Note: In full gate, uncertainty only provides benefit when reliability is high
+        effective_uncertainty = (u * r) if self.use_reliability_coupling else u
         benefit = self.w_novelty * n + self.w_uncertainty * effective_uncertainty
 
         # 3. Compute Harm H(x)
@@ -137,6 +139,96 @@ class RuleBasedGatePolicy:
             utility=utility,
             benefit=benefit,
             harm=harm,
+            reason=reason,
+            reason_detail=detail,
+            signals=signals,
+        )
+
+
+class UncertaintyGatePolicy:
+    """
+    Classical Active Learning baseline policy.
+    Selects samples for training purely based on predictive entropy uncertainty.
+    """
+
+    def __init__(self, uncertainty_threshold: float = 0.35) -> None:
+        self.uncertainty_threshold = uncertainty_threshold
+
+    def evaluate(
+        self,
+        signals: SignalScores,
+        sample_id: str = "sample_000000",
+        stream_index: int = 0,
+    ) -> GateDecision:
+        u = signals.uncertainty
+        if not math.isfinite(u):
+            return GateDecision(
+                sample_id=sample_id,
+                stream_index=stream_index,
+                action=GateAction.IGNORE,
+                utility=0.0,
+                benefit=0.0,
+                harm=1.0,
+                reason=ReasonCode.FALLBACK_SAFE,
+                reason_detail="Non-finite uncertainty signal encountered.",
+                signals=signals,
+            )
+
+        if u >= self.uncertainty_threshold:
+            action = GateAction.LEARN
+            reason = ReasonCode.HIGH_UNCERTAINTY
+            detail = f"Uncertainty {u:.3f} >= threshold {self.uncertainty_threshold:.3f}."
+        else:
+            action = GateAction.IGNORE
+            reason = ReasonCode.LOW_UNCERTAINTY
+            detail = f"Uncertainty {u:.3f} < threshold {self.uncertainty_threshold:.3f}."
+
+        return GateDecision(
+            sample_id=sample_id,
+            stream_index=stream_index,
+            action=action,
+            utility=u,
+            benefit=u,
+            harm=0.0,
+            reason=reason,
+            reason_detail=detail,
+            signals=signals,
+        )
+
+
+class RandomGatePolicy:
+    """
+    Budget-matched random sampling baseline policy.
+    Selects samples uniformly at random with probability equal to budget_rate.
+    """
+
+    def __init__(self, budget_rate: float = 0.35, seed: int | None = None) -> None:
+        self.budget_rate = budget_rate
+        self.rng = random.Random(seed)
+
+    def evaluate(
+        self,
+        signals: SignalScores,
+        sample_id: str = "sample_000000",
+        stream_index: int = 0,
+    ) -> GateDecision:
+        roll = self.rng.random()
+        if roll < self.budget_rate:
+            action = GateAction.LEARN
+            reason = ReasonCode.RANDOM_SELECTED
+            detail = f"Random roll {roll:.3f} < budget {self.budget_rate:.3f}."
+        else:
+            action = GateAction.IGNORE
+            reason = ReasonCode.RANDOM_SKIPPED
+            detail = f"Random roll {roll:.3f} >= budget {self.budget_rate:.3f}."
+
+        return GateDecision(
+            sample_id=sample_id,
+            stream_index=stream_index,
+            action=action,
+            utility=self.budget_rate,
+            benefit=self.budget_rate,
+            harm=0.0,
             reason=reason,
             reason_detail=detail,
             signals=signals,

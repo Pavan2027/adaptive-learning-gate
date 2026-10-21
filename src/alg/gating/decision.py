@@ -27,6 +27,10 @@ class ReasonCode(str, Enum):
     REDUNDANT = "REDUNDANT"                    # Low novelty and low uncertainty (redundant compute)
     AMBIGUOUS_DEFERRED = "AMBIGUOUS_DEFERRED"  # Intermediate utility; requires quarantine/re-evaluation
     FALLBACK_SAFE = "FALLBACK_SAFE"            # Non-finite or missing signals safely ignored
+    HIGH_UNCERTAINTY = "HIGH_UNCERTAINTY"      # Uncertainty-only active learning selection
+    LOW_UNCERTAINTY = "LOW_UNCERTAINTY"        # Uncertainty-only active learning rejection
+    RANDOM_SELECTED = "RANDOM_SELECTED"        # Random baseline selection
+    RANDOM_SKIPPED = "RANDOM_SKIPPED"          # Random baseline rejection
 
 
 @dataclass
