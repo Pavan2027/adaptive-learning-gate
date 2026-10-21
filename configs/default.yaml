@@ -37,7 +37,7 @@ stream:
 
 # ── Adaptive Learning Gate (Phase 5+) ────────────────────────────────────────
 gate:
-  learn_threshold: 0.5         # utility >= learn_threshold  → LEARN
+  learn_threshold: 0.44        # utility >= learn_threshold  → LEARN
   ignore_threshold: 0.3        # utility <= ignore_threshold → IGNORE
                                # otherwise                  → DEFER
   defer_queue_capacity: 500    # Maximum number of deferred samples (0 = unlimited)

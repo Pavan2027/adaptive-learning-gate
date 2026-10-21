@@ -141,7 +141,7 @@ def run_experiment(
             load_checkpoint(ckpt, model, device=device)
         model.to(device)
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, weight_decay=cfg.optimizer.weight_decay)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.0002, weight_decay=cfg.optimizer.weight_decay)
 
         if run_mode == "conventional":
             trainer = StreamTrainer(
@@ -175,8 +175,8 @@ def run_experiment(
                 prototype_memory=memory,
                 device=device,
                 use_amp=True,
-                recheck_interval=5,
-                recheck_batch_size=32,
+                recheck_interval=2,
+                recheck_batch_size=64,
             )
             res = trainer.train_stream(
                 simulator=simulator,

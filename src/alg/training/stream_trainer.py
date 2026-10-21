@@ -87,8 +87,8 @@ class StreamTrainer:
         prototype_memory: PrototypeMemory | None = None,
         device: torch.device | str | None = None,
         use_amp: bool = True,
-        recheck_interval: int = 5,
-        recheck_batch_size: int = 32,
+        recheck_interval: int = 2,
+        recheck_batch_size: int = 64,
         max_defer_retries: int = 1,
     ) -> None:
         """
@@ -148,6 +148,10 @@ class StreamTrainer:
             targets = torch.cat([targets, targets], dim=0)
 
         self.model.train()
+        # In continual learning on sparse batches, freeze BatchNorm statistics so small batches don't distort running mean/var:
+        for m in self.model.modules():
+            if isinstance(m, (nn.BatchNorm2d, nn.BatchNorm1d)):
+                m.eval()
         self.optimizer.zero_grad()
 
         images = images.to(self.device, non_blocking=True)

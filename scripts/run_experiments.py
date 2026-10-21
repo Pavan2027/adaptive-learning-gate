@@ -152,7 +152,7 @@ def run_single_experiment(
         load_checkpoint(ckpt, model, device=device)
     model.to(device)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, weight_decay=0.0001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.0002, weight_decay=0.0001)
 
     # 4. Configure Policy and Trainer based on method
     m_type = method_cfg.get("type", "gated")
@@ -215,8 +215,8 @@ def run_single_experiment(
             prototype_memory=memory,
             device=device,
             use_amp=True,
-            recheck_interval=5,
-            recheck_batch_size=32,
+            recheck_interval=method_cfg.get("recheck_interval", 2),
+            recheck_batch_size=method_cfg.get("recheck_batch_size", 64),
         )
         res = trainer.train_stream(
             simulator=simulator,

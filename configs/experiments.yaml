@@ -61,13 +61,15 @@ methods:
   gated_full:
     name: "Adaptive Learning Gate (Ours)"
     type: "gated"
-    learn_threshold: 0.50
+    learn_threshold: 0.44
     ignore_threshold: 0.30
     w_novelty: 0.5
     w_uncertainty: 0.5
     w_unreliability: 0.8
     w_redundancy: 0.2
     defer_queue_capacity: 500
+    recheck_interval: 2
+    recheck_batch_size: 64
     description: "Full proposed multi-signal gate with uncertainty, novelty, reliability, and deferral."
 
 # ── Component Ablations ──────────────────────────────────────────────────────
@@ -75,7 +77,7 @@ ablations:
   ablation_no_novelty:
     name: "ALG w/o Novelty (w_nov=0)"
     type: "gated"
-    learn_threshold: 0.50
+    learn_threshold: 0.44
     ignore_threshold: 0.30
     w_novelty: 0.0
     w_uncertainty: 0.5
@@ -86,7 +88,7 @@ ablations:
   ablation_no_reliability:
     name: "ALG w/o Reliability (w_unrel=0)"
     type: "gated"
-    learn_threshold: 0.50
+    learn_threshold: 0.44
     ignore_threshold: 0.30
     w_novelty: 0.5
     w_uncertainty: 0.5
@@ -98,7 +100,7 @@ ablations:
   ablation_no_uncertainty:
     name: "ALG w/o Uncertainty (w_unc=0)"
     type: "gated"
-    learn_threshold: 0.50
+    learn_threshold: 0.44
     ignore_threshold: 0.30
     w_novelty: 0.5
     w_uncertainty: 0.0
@@ -109,11 +111,12 @@ ablations:
   ablation_no_defer:
     name: "ALG w/o Deferral (Hard Gate)"
     type: "gated"
-    learn_threshold: 0.40
-    ignore_threshold: 0.40
+    learn_threshold: 0.37
+    ignore_threshold: 0.37
     allow_no_defer: true
     w_novelty: 0.5
     w_uncertainty: 0.5
     w_unreliability: 0.8
     w_redundancy: 0.2
     description: "Hard binary gate forcing immediate LEARN or IGNORE without quarantine or recheck."
+

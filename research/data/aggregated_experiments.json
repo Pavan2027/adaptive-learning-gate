@@ -1,5 +1,205 @@
 {
   "noisy_stream": {
+    "ablation_no_defer": {
+      "method_name": "ALG w/o Deferral (Hard Gate)",
+      "condition_name": "Standard Perturbed Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 70.96,
+        "std": 0.0,
+        "min": 70.96,
+        "max": 70.96,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 70.1,
+        "std": 0.0,
+        "min": 70.1,
+        "max": 70.1,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 16.0,
+        "std": 0.0,
+        "min": 16.0,
+        "max": 16.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 95.92,
+        "std": 0.0,
+        "min": 95.92,
+        "max": 95.92,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 37.8,
+        "std": 0.0,
+        "min": 37.8,
+        "max": 37.8,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 18.12,
+        "std": 0.0,
+        "min": 18.12,
+        "max": 18.12,
+        "count": 1
+      }
+    },
+    "ablation_no_novelty": {
+      "method_name": "ALG w/o Novelty (w_nov=0)",
+      "condition_name": "Standard Perturbed Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 70.03,
+        "std": 0.0,
+        "min": 70.03,
+        "max": 70.03,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 70.22,
+        "std": 0.0,
+        "min": 70.22,
+        "max": 70.22,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 20.0,
+        "std": 0.0,
+        "min": 20.0,
+        "max": 20.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 94.9,
+        "std": 0.0,
+        "min": 94.9,
+        "max": 94.9,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 60.55,
+        "std": 0.0,
+        "min": 60.55,
+        "max": 60.55,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 18.11,
+        "std": 0.0,
+        "min": 18.11,
+        "max": 18.11,
+        "count": 1
+      }
+    },
+    "ablation_no_reliability": {
+      "method_name": "ALG w/o Reliability (w_unrel=0)",
+      "condition_name": "Standard Perturbed Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 73.9,
+        "std": 0.0,
+        "min": 73.9,
+        "max": 73.9,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 73.62,
+        "std": 0.0,
+        "min": 73.62,
+        "max": 73.62,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 388.0,
+        "std": 0.0,
+        "min": 388.0,
+        "max": 388.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 1.02,
+        "std": 0.0,
+        "min": 1.02,
+        "max": 1.02,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 0.35,
+        "std": 0.0,
+        "min": 0.35,
+        "max": 0.35,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 17.98,
+        "std": 0.0,
+        "min": 17.98,
+        "max": 17.98,
+        "count": 1
+      }
+    },
+    "ablation_no_uncertainty": {
+      "method_name": "ALG w/o Uncertainty (w_unc=0)",
+      "condition_name": "Standard Perturbed Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 73.53,
+        "std": 0.0,
+        "min": 73.53,
+        "max": 73.53,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 73.49,
+        "std": 0.0,
+        "min": 73.49,
+        "max": 73.49,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 16.0,
+        "std": 0.0,
+        "min": 16.0,
+        "max": 16.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 95.92,
+        "std": 0.0,
+        "min": 95.92,
+        "max": 95.92,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 58.95,
+        "std": 0.0,
+        "min": 58.95,
+        "max": 58.95,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 18.03,
+        "std": 0.0,
+        "min": 18.03,
+        "max": 18.03,
+        "count": 1
+      }
+    },
     "gated_full": {
       "method_name": "Adaptive Learning Gate (Ours)",
       "condition_name": "Standard Perturbed Stream",
@@ -8,45 +208,145 @@
         42
       ],
       "accuracy": {
-        "mean": 74.83,
+        "mean": 68.98,
         "std": 0.0,
-        "min": 74.83,
-        "max": 74.83,
+        "min": 68.98,
+        "max": 68.98,
         "count": 1
       },
       "macro_f1": {
-        "mean": 74.78,
+        "mean": 67.77,
         "std": 0.0,
-        "min": 74.78,
-        "max": 74.78,
+        "min": 67.77,
+        "max": 67.77,
         "count": 1
       },
       "noise_ingested": {
-        "mean": 2.0,
+        "mean": 24.0,
         "std": 0.0,
-        "min": 2.0,
-        "max": 2.0,
+        "min": 24.0,
+        "max": 24.0,
         "count": 1
       },
       "noise_interception_pct": {
-        "mean": 90.48,
+        "mean": 93.88,
         "std": 0.0,
-        "min": 90.48,
-        "max": 90.48,
+        "min": 93.88,
+        "max": 93.88,
         "count": 1
       },
       "sample_savings_pct": {
-        "mean": 57.0,
+        "mean": 52.8,
         "std": 0.0,
-        "min": 57.0,
-        "max": 57.0,
+        "min": 52.8,
+        "max": 52.8,
         "count": 1
       },
       "elapsed_seconds": {
-        "mean": 10.55,
+        "mean": 20.05,
         "std": 0.0,
-        "min": 10.55,
-        "max": 10.55,
+        "min": 20.05,
+        "max": 20.05,
+        "count": 1
+      }
+    },
+    "random": {
+      "method_name": "Budget-Matched Random",
+      "condition_name": "Standard Perturbed Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 71.99,
+        "std": 0.0,
+        "min": 71.99,
+        "max": 71.99,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 71.88,
+        "std": 0.0,
+        "min": 71.88,
+        "max": 71.88,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 140.0,
+        "std": 0.0,
+        "min": 140.0,
+        "max": 140.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 64.29,
+        "std": 0.0,
+        "min": 64.29,
+        "max": 64.29,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 65.15,
+        "std": 0.0,
+        "min": 65.15,
+        "max": 65.15,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 18.94,
+        "std": 0.0,
+        "min": 18.94,
+        "max": 18.94,
+        "count": 1
+      }
+    },
+    "uncertainty_only": {
+      "method_name": "Active Learning (Uncertainty-Only)",
+      "condition_name": "Standard Perturbed Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 73.16,
+        "std": 0.0,
+        "min": 73.16,
+        "max": 73.16,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 72.59,
+        "std": 0.0,
+        "min": 72.59,
+        "max": 72.59,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 241.0,
+        "std": 0.0,
+        "min": 241.0,
+        "max": 241.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 38.52,
+        "std": 0.0,
+        "min": 38.52,
+        "max": 38.52,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 34.05,
+        "std": 0.0,
+        "min": 34.05,
+        "max": 34.05,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 18.82,
+        "std": 0.0,
+        "min": 18.82,
+        "max": 18.82,
         "count": 1
       }
     },
@@ -58,24 +358,24 @@
         42
       ],
       "accuracy": {
-        "mean": 73.76,
+        "mean": 74.22,
         "std": 0.0,
-        "min": 73.76,
-        "max": 73.76,
+        "min": 74.22,
+        "max": 74.22,
         "count": 1
       },
       "macro_f1": {
-        "mean": 73.86,
+        "mean": 73.83,
         "std": 0.0,
-        "min": 73.86,
-        "max": 73.86,
+        "min": 73.83,
+        "max": 73.83,
         "count": 1
       },
       "noise_ingested": {
-        "mean": 21.0,
+        "mean": 392.0,
         "std": 0.0,
-        "min": 21.0,
-        "max": 21.0,
+        "min": 392.0,
+        "max": 392.0,
         "count": 1
       },
       "noise_interception_pct": {
@@ -93,10 +393,162 @@
         "count": 1
       },
       "elapsed_seconds": {
-        "mean": 11.77,
+        "mean": 19.08,
         "std": 0.0,
-        "min": 11.77,
-        "max": 11.77,
+        "min": 19.08,
+        "max": 19.08,
+        "count": 1
+      }
+    }
+  },
+  "high_noise_stream": {
+    "gated_full": {
+      "method_name": "Adaptive Learning Gate (Ours)",
+      "condition_name": "High Noise Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 66.89,
+        "std": 0.0,
+        "min": 66.89,
+        "max": 66.89,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 66.68,
+        "std": 0.0,
+        "min": 66.68,
+        "max": 66.68,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 30.0,
+        "std": 0.0,
+        "min": 30.0,
+        "max": 30.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 96.25,
+        "std": 0.0,
+        "min": 96.25,
+        "max": 96.25,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 61.6,
+        "std": 0.0,
+        "min": 61.6,
+        "max": 61.6,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 19.13,
+        "std": 0.0,
+        "min": 19.13,
+        "max": 19.13,
+        "count": 1
+      }
+    },
+    "uncertainty_only": {
+      "method_name": "Active Learning (Uncertainty-Only)",
+      "condition_name": "High Noise Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 67.48,
+        "std": 0.0,
+        "min": 67.48,
+        "max": 67.48,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 67.36,
+        "std": 0.0,
+        "min": 67.36,
+        "max": 67.36,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 597.0,
+        "std": 0.0,
+        "min": 597.0,
+        "max": 597.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 25.47,
+        "std": 0.0,
+        "min": 25.47,
+        "max": 25.47,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 25.25,
+        "std": 0.0,
+        "min": 25.25,
+        "max": 25.25,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 18.86,
+        "std": 0.0,
+        "min": 18.86,
+        "max": 18.86,
+        "count": 1
+      }
+    },
+    "update_all": {
+      "method_name": "Conventional (Update-All)",
+      "condition_name": "High Noise Stream",
+      "num_seeds": 1,
+      "seeds": [
+        42
+      ],
+      "accuracy": {
+        "mean": 59.85,
+        "std": 0.0,
+        "min": 59.85,
+        "max": 59.85,
+        "count": 1
+      },
+      "macro_f1": {
+        "mean": 58.59,
+        "std": 0.0,
+        "min": 58.59,
+        "max": 58.59,
+        "count": 1
+      },
+      "noise_ingested": {
+        "mean": 801.0,
+        "std": 0.0,
+        "min": 801.0,
+        "max": 801.0,
+        "count": 1
+      },
+      "noise_interception_pct": {
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "count": 1
+      },
+      "sample_savings_pct": {
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "count": 1
+      },
+      "elapsed_seconds": {
+        "mean": 18.74,
+        "std": 0.0,
+        "min": 18.74,
+        "max": 18.74,
         "count": 1
       }
     }
