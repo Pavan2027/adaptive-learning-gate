@@ -4,8 +4,9 @@
 
 meta:
   benchmark: "CIFAR-100 Continual Stream (ResNet-18)"
-  baseline_checkpoint: "checkpoints/best_model_resnet18_cifar100.pt"
+  baseline_checkpoint: "checkpoints/best_model_cifar100_resnet18.pt"
   output_dir: "results/experiments/resnet18_cifar100"
+  architecture: "resnet18"
   dataset_name: "cifar100"
   dataset_root: "data/"
   seeds: [42]

@@ -131,7 +131,10 @@ class StreamSimulator:
         segment_size = self.stream_size // self.num_segments
 
         # Index available dataset items by class for distribution shifting
-        class_to_indices: dict[int, list[int]] = {c: [] for c in range(self.num_classes)}
+        from collections import defaultdict
+        class_to_indices: dict[int, list[int]] = defaultdict(list)
+        for c in range(self.num_classes):
+            class_to_indices[c] = []
         for idx in range(min(dataset_len, 50000)):
             _, target = self.base_dataset[idx]
             if isinstance(target, torch.Tensor):

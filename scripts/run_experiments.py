@@ -121,13 +121,19 @@ def run_single_experiment(
         feature_corruption_rate=condition_cfg.get("feature_corruption_rate", 0.0),
         redundancy_rate=condition_cfg.get("redundancy_rate", 0.0),
         seed=seed,
+        num_classes=meta.num_classes,
     )
 
     # Count ground-truth noisy labels in stream for metrics calculation
     total_noisy_labels = sum(1 for s in simulator.samples if s.metadata.is_noisy_label)
 
     # 3. Build Model from Checkpoint
-    model = build_model(architecture="cnn", num_classes=meta.num_classes, in_channels=meta.in_channels)
+    model = build_model(
+        architecture=architecture,
+        num_classes=meta.num_classes,
+        in_channels=meta.in_channels,
+        pretrained=True,
+    )
     ckpt = Path(checkpoint_path)
     if ckpt.exists():
         load_checkpoint(ckpt, model, device=device)
@@ -277,6 +283,7 @@ def main() -> None:
     out_dir = Path(exp_cfg["meta"]["output_dir"])
     dataset_name = args.dataset or exp_cfg["meta"].get("dataset_name", "cifar10")
     dataset_root = exp_cfg["meta"].get("dataset_root", "data/")
+    architecture = args.architecture or exp_cfg["meta"].get("architecture", "cnn")
 
     stream_size = 100 if args.smoke else (args.stream_size or exp_cfg["meta"]["default_stream_size"])
     seeds = [42] if args.smoke else ([int(s) for s in args.seeds.split(",")] if args.seeds else [42])
@@ -334,6 +341,7 @@ def main() -> None:
                 dataset_root=dataset_root,
                 output_dir=out_dir,
                 device=device,
+                architecture=architecture,
             )
             all_records.append(rec)
 
