@@ -11,7 +11,7 @@ meta:
   seeds: [42, 43, 44]
   default_stream_size: 10000
   default_batch_size: 64
-  stream_lr: 0.0003
+  stream_lr: 0.00002
 
 # ── Stream Noise & Corruption Regimes ────────────────────────────────────────
 conditions:
@@ -64,7 +64,7 @@ methods:
   coreset:
     name: "Core-Set Diversity (Novelty-Only)"
     type: "coreset"
-    threshold: 0.40
+    threshold: 0.025
     description: "Geometric core-set active learning selecting points distant from existing prototypes (Sener & Savarese, ICLR 2018)."
 
   gated_full:
@@ -128,3 +128,4 @@ ablations:
     w_unreliability: 0.8
     w_redundancy: 0.2
     description: "Binary gate forcing immediate LEARN or IGNORE decisions with no episodic quarantine buffer."
+

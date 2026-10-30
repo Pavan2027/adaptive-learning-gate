@@ -143,7 +143,7 @@ def run_single_experiment(
     stream_lr = (
         method_cfg.get("lr")
         or condition_cfg.get("lr")
-        or (1e-5 if architecture == "resnet18" else 0.0003)
+        or (2e-5 if architecture.startswith("resnet") else 0.0002)
     )
     optimizer = torch.optim.Adam(model.parameters(), lr=stream_lr, weight_decay=0.0001)
 

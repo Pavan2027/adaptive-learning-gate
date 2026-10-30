@@ -102,3 +102,4 @@ class CifarResNet56Backbone(nn.Module):
         """
         features = self.forward_features(x)
         return self.classifier(features)
+
