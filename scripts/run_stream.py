@@ -51,18 +51,8 @@ logger = logging.getLogger("stream_runner")
 def _build_test_loader(dataset_name: str, root: str, batch_size: int = 128) -> DataLoader:
     """Build held-out test dataloader."""
     meta = get_dataset_metadata(dataset_name)
-    in_channels = meta.in_channels
-    if in_channels == 3:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
-        ])
-    else:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.2860,), (0.3530,)),
-        ])
-
+    from alg.data.datasets import _build_transforms
+    transform = _build_transforms(meta, is_train=False)
     raw_test = load_raw_dataset(dataset_name, root=root, train=False, download=True, transform=transform)
     return DataLoader(raw_test, batch_size=batch_size, shuffle=False)
 
@@ -95,16 +85,8 @@ def run_experiment(
     # 1. Load stream dataset
     meta = get_dataset_metadata(cfg.dataset.name)
     in_channels = meta.in_channels
-    if in_channels == 3:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
-        ])
-    else:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.2860,), (0.3530,)),
-        ])
+    from alg.data.datasets import _build_transforms
+    transform = _build_transforms(meta, is_train=True)
 
     raw_train = load_raw_dataset(cfg.dataset.name, root=cfg.dataset.root, train=True, download=cfg.dataset.download, transform=transform)
     test_loader = _build_test_loader(cfg.dataset.name, cfg.dataset.root, batch_size=128)
@@ -135,7 +117,7 @@ def run_experiment(
     for run_mode in modes_to_run:
         print(f"\n>>> Running Continual Training: [{run_mode.upper()}] Mode")
         # Load fresh model from baseline checkpoint
-        model = build_model(architecture=cfg.model.architecture, num_classes=10, in_channels=in_channels)
+        model = build_model(architecture=cfg.model.architecture, num_classes=meta.num_classes, in_channels=in_channels, pretrained=getattr(cfg.model, "pretrained", True))
         ckpt = Path(checkpoint_path)
         if ckpt.exists():
             load_checkpoint(ckpt, model, device=device)
@@ -158,7 +140,7 @@ def run_experiment(
                 eval_interval=max(200, stream_size // 4),
             )
         else:
-            memory = PrototypeMemory(num_classes=10, feature_dim=256, device=device)
+            memory = PrototypeMemory(num_classes=model.num_classes, feature_dim=model.feature_dim, device=device)
             _warmup_memory(model, memory)
 
             extractor = SignalExtractor(model=model, prototype_memory=memory, device=device)

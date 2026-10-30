@@ -4,6 +4,7 @@ Model architectures and factory for the Adaptive Learning Gate.
 Exports:
 - CompactCNN: Standard 4-layer CNN with penultimate feature extraction.
 - ModularMLP: Configurable multi-layer perceptron.
+- ResNet18Backbone: Pre-trained ResNet-18 backbone with ALG interface.
 - build_model: Factory function instantiating architectures based on config.
 """
 
@@ -13,6 +14,7 @@ import torch.nn as nn
 
 from alg.models.cnn import CompactCNN
 from alg.models.mlp import ModularMLP
+from alg.models.resnet import ResNet18Backbone
 
 
 def build_model(
@@ -22,17 +24,21 @@ def build_model(
     image_size: tuple[int, int] = (32, 32),
     hidden_dims: list[int] | None = None,
     dropout: float = 0.3,
+    pretrained: bool = True,
+    freeze_backbone: bool = False,
 ) -> nn.Module:
     """
     Factory function to instantiate models.
 
     Args:
-        architecture: 'cnn' or 'mlp'.
+        architecture: 'cnn', 'mlp', or 'resnet18'.
         num_classes: Number of target classification categories.
         in_channels: Number of input image channels (1 for grayscale, 3 for RGB).
         image_size: Tuple (height, width) of input images.
         hidden_dims: List of hidden dimensions for MLP architecture.
         dropout: Dropout probability.
+        pretrained: Load ImageNet pre-trained weights for ResNet-18 (default True).
+        freeze_backbone: Freeze backbone parameters for ResNet-18 linear probing.
 
     Returns:
         Instantiated nn.Module ready for training.
@@ -52,10 +58,17 @@ def build_model(
             hidden_dims=hidden_dims,
             dropout=dropout,
         )
+    elif arch == "resnet18":
+        return ResNet18Backbone(
+            num_classes=num_classes,
+            pretrained=pretrained,
+            freeze_backbone=freeze_backbone,
+        )
     else:
         raise ValueError(
-            f"Unknown architecture '{architecture}'. Supported architectures: ['cnn', 'mlp']."
+            f"Unknown architecture '{architecture}'. "
+            f"Supported architectures: ['cnn', 'mlp', 'resnet18']."
         )
 
 
-__all__ = ["CompactCNN", "ModularMLP", "build_model"]
+__all__ = ["CompactCNN", "ModularMLP", "ResNet18Backbone", "build_model"]

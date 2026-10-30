@@ -58,12 +58,12 @@ def main() -> None:
     )
     parser.add_argument(
         "--dataset",
-        choices=["cifar10", "fashion_mnist", "mnist"],
+        choices=["cifar10", "cifar100", "tiny_imagenet", "fashion_mnist", "mnist"],
         help="Override dataset name.",
     )
     parser.add_argument(
         "--architecture",
-        choices=["cnn", "mlp"],
+        choices=["cnn", "mlp", "resnet18"],
         help="Override model architecture.",
     )
     parser.add_argument(
@@ -99,6 +99,12 @@ def main() -> None:
     parser.add_argument(
         "--output",
         help="Path for saving results JSON file. Defaults to results/baseline_<dataset>_<arch>.json",
+    )
+    parser.add_argument(
+        "--checkpoint-name",
+        default=None,
+        help="Filename for best-model checkpoint (default: best_model.pt). "
+             "Set to e.g. 'best_model_resnet18_cifar100.pt' to avoid overwriting the existing checkpoint.",
     )
     args = parser.parse_args()
 
@@ -147,6 +153,7 @@ def main() -> None:
         in_channels=metadata.in_channels,
         image_size=metadata.image_size,
         hidden_dims=cfg.model.hidden_dims,
+        pretrained=cfg.model.pretrained,
     )
 
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -179,6 +186,9 @@ def main() -> None:
         test_loader=test_loader,
         epochs=epochs,
         checkpoint_dir=cfg.output.checkpoint_dir,
+        checkpoint_name=args.checkpoint_name or f"best_model_{dataset_name}_{architecture}.pt"
+            if (args.checkpoint_name or (dataset_name != "cifar10" or architecture != "cnn"))
+            else "best_model.pt",
         smoke_test=args.smoke_test,
         config_snapshot=cfg.model_dump(),
     )

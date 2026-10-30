@@ -1,0 +1,56 @@
+# Adaptive Learning Gate — ResNet-18 + CIFAR-100 Configuration
+#
+# Research-quality setup: pre-trained ResNet-18 backbone fine-tuned on CIFAR-100.
+# Target baseline accuracy: ~78-82% (vs ~50% for scratch-trained CNN).
+# The improved baseline makes the ALG noise-resilience delta much more visible.
+#
+# Usage:
+#   python scripts/train_baseline.py --config configs/resnet18_cifar100.yaml
+#   python scripts/run_experiments.py --config configs/experiments_resnet18_cifar100.yaml
+
+# ── Dataset ──────────────────────────────────────────────────────────────────
+dataset:
+  name: cifar100                 # 100-class benchmark
+  root: data/
+  download: true
+
+# ── Model ────────────────────────────────────────────────────────────────────
+model:
+  architecture: resnet18         # Pre-trained ResNet-18 backbone
+  pretrained: true               # Load ImageNet-1K weights
+  hidden_dims: [256, 128]        # Unused for resnet18; kept for config compatibility
+
+# ── Reproducibility ──────────────────────────────────────────────────────────
+seed: 42
+
+# ── Training ─────────────────────────────────────────────────────────────────
+batch_size: 128
+epochs: 15                       # More epochs needed for 100 classes
+
+optimizer:
+  name: sgd                      # SGD + momentum is standard for ResNet fine-tuning
+  lr: 0.01                       # Lower LR since backbone is pre-trained
+  weight_decay: 0.0005
+
+# ── Stream Simulation (Phase 3+) ─────────────────────────────────────────────
+stream:
+  size: 10000
+  shuffle: true
+  label_noise_rate: 0.20         # Standard 20% noise condition
+  feature_corruption_rate: 0.15
+  redundancy_rate: 0.05
+  shift_type: none
+  num_segments: 1
+
+# ── Adaptive Learning Gate ────────────────────────────────────────────────────
+gate:
+  learn_threshold: 0.44
+  ignore_threshold: 0.30
+  defer_queue_capacity: 500
+
+# ── Output Paths ─────────────────────────────────────────────────────────────
+output:
+  log_dir: logs/
+  checkpoint_dir: checkpoints/
+  results_dir: results/experiments/resnet18_cifar100/
+

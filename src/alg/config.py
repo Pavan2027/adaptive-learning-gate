@@ -29,7 +29,7 @@ class DatasetConfig(BaseModel):
 
     name: str = Field(
         default="cifar10",
-        description="Dataset name. Supported: 'cifar10', 'fashion_mnist', 'mnist'.",
+        description="Dataset name. Supported: 'cifar10', 'cifar100', 'tiny_imagenet', 'fashion_mnist', 'mnist'.",
     )
     root: str = Field(
         default="data/",
@@ -46,11 +46,15 @@ class ModelConfig(BaseModel):
 
     architecture: str = Field(
         default="mlp",
-        description="Architecture type. Supported: 'mlp', 'cnn'. (Implemented Phase 2+)",
+        description="Architecture type. Supported: 'mlp', 'cnn', 'resnet18'.",
     )
     hidden_dims: list[int] = Field(
         default=[256, 128],
         description="Hidden layer sizes for MLP architecture.",
+    )
+    pretrained: bool = Field(
+        default=True,
+        description="Load ImageNet pre-trained weights for ResNet-18 backbone.",
     )
 
 

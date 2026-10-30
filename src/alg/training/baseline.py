@@ -183,6 +183,7 @@ class BaselineTrainer:
         test_loader: DataLoader,
         epochs: int = 5,
         checkpoint_dir: str | Path = "checkpoints/",
+        checkpoint_name: str = "best_model.pt",
         smoke_test: bool = False,
         config_snapshot: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -195,6 +196,9 @@ class BaselineTrainer:
             test_loader: Held-out test loader (evaluated once on best model).
             epochs: Number of epochs to train.
             checkpoint_dir: Directory where checkpoints will be stored.
+            checkpoint_name: Filename for the best model checkpoint. Defaults to
+                'best_model.pt'. Override to avoid overwriting existing checkpoints,
+                e.g. 'best_model_resnet18_cifar100.pt'.
             smoke_test: If True, limit each epoch to 2 batches for fast testing.
             config_snapshot: Optional dictionary of run configuration to save.
 
@@ -203,7 +207,7 @@ class BaselineTrainer:
         """
         ckpt_dir = Path(checkpoint_dir)
         ckpt_dir.mkdir(parents=True, exist_ok=True)
-        best_ckpt_path = ckpt_dir / "best_model.pt"
+        best_ckpt_path = ckpt_dir / checkpoint_name
 
         max_batches = 2 if smoke_test else None
         num_epochs = 1 if smoke_test else epochs

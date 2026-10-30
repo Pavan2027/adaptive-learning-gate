@@ -79,18 +79,8 @@ def _load_experiments_config(path: str | Path) -> dict[str, Any]:
 
 def _build_test_loader(dataset_name: str, root: str, batch_size: int = 128) -> DataLoader:
     meta = get_dataset_metadata(dataset_name)
-    in_channels = meta.in_channels
-    if in_channels == 3:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
-        ])
-    else:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.2860,), (0.3530,)),
-        ])
-
+    from alg.data.datasets import _build_transforms
+    transform = _build_transforms(meta, is_train=False)
     raw_test = load_raw_dataset(dataset_name, root=root, train=False, download=True, transform=transform)
     return DataLoader(raw_test, batch_size=batch_size, shuffle=False)
 
@@ -108,6 +98,7 @@ def run_single_experiment(
     dataset_root: str,
     output_dir: Path,
     device: torch.device,
+    architecture: str = "cnn",
 ) -> dict[str, Any]:
     run_id = f"{method_key}_{condition_key}_s{seed}"
     logger.info("Executing Run: %s ...", run_id)
@@ -117,19 +108,9 @@ def run_single_experiment(
 
     # 1. Prepare Dataset and Test DataLoader
     meta = get_dataset_metadata(dataset_name)
-    in_channels = meta.in_channels
-    if in_channels == 3:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)),
-        ])
-    else:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.2860,), (0.3530,)),
-        ])
-
-    raw_train = load_raw_dataset(dataset_name, root=dataset_root, train=True, download=True, transform=transform)
+    from alg.data.datasets import _build_transforms
+    train_transform = _build_transforms(meta, is_train=True)
+    raw_train = load_raw_dataset(dataset_name, root=dataset_root, train=True, download=True, transform=train_transform)
     test_loader = _build_test_loader(dataset_name, root=dataset_root, batch_size=128)
 
     # 2. Build Stream Simulator for this condition and seed
@@ -146,7 +127,7 @@ def run_single_experiment(
     total_noisy_labels = sum(1 for s in simulator.samples if s.metadata.is_noisy_label)
 
     # 3. Build Model from Checkpoint
-    model = build_model(architecture="cnn", num_classes=10, in_channels=in_channels)
+    model = build_model(architecture="cnn", num_classes=meta.num_classes, in_channels=meta.in_channels)
     ckpt = Path(checkpoint_path)
     if ckpt.exists():
         load_checkpoint(ckpt, model, device=device)
@@ -173,7 +154,7 @@ def run_single_experiment(
         )
     else:
         # Build prototype memory
-        memory = PrototypeMemory(num_classes=10, feature_dim=256, device=device)
+        memory = PrototypeMemory(num_classes=model.num_classes, feature_dim=model.feature_dim, device=device)
         with torch.no_grad():
             w_loader = DataLoader(raw_train, batch_size=128, shuffle=True)
             for b_idx, (imgs, lbls) in enumerate(w_loader):
@@ -284,13 +265,18 @@ def main() -> None:
     parser.add_argument("--stream-size", type=int, help="Override stream size.")
     parser.add_argument("--batch-size", type=int, default=64, help="Stream batch size.")
     parser.add_argument("--smoke", action="store_true", help="Fast smoke test (100 samples).")
+    parser.add_argument("--dataset", default=None, help="Dataset name (overrides experiments.yaml). E.g. 'cifar100'.")
+    parser.add_argument("--architecture", default=None, help="Model architecture (e.g. 'cnn', 'resnet18').")
+    parser.add_argument("--checkpoint", default=None, help="Override checkpoint path.")
     args = parser.parse_args()
 
     exp_cfg = _load_experiments_config(args.config)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    ckpt_path = exp_cfg["meta"]["baseline_checkpoint"]
+    ckpt_path = args.checkpoint or exp_cfg["meta"]["baseline_checkpoint"]
     out_dir = Path(exp_cfg["meta"]["output_dir"])
+    dataset_name = args.dataset or exp_cfg["meta"].get("dataset_name", "cifar10")
+    dataset_root = exp_cfg["meta"].get("dataset_root", "data/")
 
     stream_size = 100 if args.smoke else (args.stream_size or exp_cfg["meta"]["default_stream_size"])
     seeds = [42] if args.smoke else ([int(s) for s in args.seeds.split(",")] if args.seeds else [42])
@@ -344,8 +330,8 @@ def main() -> None:
                 stream_size=stream_size,
                 batch_size=args.batch_size,
                 checkpoint_path=ckpt_path,
-                dataset_name="cifar10",
-                dataset_root="data/",
+                dataset_name=dataset_name,
+                dataset_root=dataset_root,
                 output_dir=out_dir,
                 device=device,
             )

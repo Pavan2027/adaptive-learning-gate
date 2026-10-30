@@ -114,18 +114,25 @@ def main() -> None:
     print("=" * 64)
 
     # 1. Load model and prototype memory
-    in_channels = 3 if cfg.dataset.name == "cifar10" else 1
-    model = build_model(architecture=cfg.model.architecture, num_classes=10, in_channels=in_channels)
+    from alg.data.datasets import get_dataset_metadata, _build_transforms
+    meta = get_dataset_metadata(cfg.dataset.name)
+    model = build_model(
+        architecture=cfg.model.architecture,
+        num_classes=meta.num_classes,
+        in_channels=meta.in_channels,
+        pretrained=getattr(cfg.model, "pretrained", True),
+    )
     ckpt = Path(args.checkpoint)
     if ckpt.exists():
         load_checkpoint(ckpt, model, device=device)
     model.to(device)
     model.eval()
 
-    memory = PrototypeMemory(num_classes=10, feature_dim=256, device=device)
+    memory = PrototypeMemory(num_classes=model.num_classes, feature_dim=model.feature_dim, device=device)
+    train_transform = _build_transforms(meta, is_train=True)
     raw_dataset = load_raw_dataset(
         cfg.dataset.name, root=cfg.dataset.root, train=True, download=cfg.dataset.download,
-        transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616)) if in_channels == 3 else transforms.Normalize((0.2860,), (0.3530,))])
+        transform=train_transform,
     )
 
     # Warmup prototype memory
