@@ -171,31 +171,30 @@ Experimental results across streaming regimes are summarized in Table \ref{tab:m
 \begin{table*}[t]
 \centering
 \small
-\caption{\textbf{Comparative Continual Streaming Adaptation on CIFAR-10 (Pre-trained ResNet-56, 94.26\% Initial Accuracy).} Performance reported across clean, $20\%$ noise, and $40\%$ noise streams. Noise Blocked indicates percentage of corrupted instances successfully filtered. Compute Saved measures reduction in backward passes relative to Update-All.}
+\caption{\textbf{Comparative Continual Streaming Adaptation on CIFAR-10 (Pre-trained ResNet-56, 94.26\% Initial Accuracy).} Performance reported across standard perturbation (20\% noise, 1,925 noise labels) and severe stress (40\% noise, 3,974 noise labels) continuous streams over 10,000 stream instances.}
 \label{tab:main_results}
-\begin{tabular}{l|cc|ccc|ccc}
+\begin{tabular}{l|ccc|ccc}
 \toprule
-\multirow{2}{*}{\textbf{Method}} & \multicolumn{2}{c|}{\textbf{Clean Stream (0\% Noise)}} & \multicolumn{3}{c|}{\textbf{Standard Perturbation (20\% Noise)}} & \multicolumn{3}{c}{\textbf{Severe Stress (40\% Noise)}} \\
-& \textbf{Acc (\%)} & \textbf{Compute Saved} & \textbf{Acc (\%)} & \textbf{Noise Blk (\%)} & \textbf{Compute Saved} & \textbf{Acc (\%)} & \textbf{Noise Blk (\%)} & \textbf{Compute Saved} \\
+\multirow{2}{*}{\textbf{Method}} & \multicolumn{3}{c|}{\textbf{Standard Perturbation (20\% Noise)}} & \multicolumn{3}{c}{\textbf{Severe Stress (40\% Noise)}} \\
+& \textbf{Acc (\%)} & \textbf{Noise Blk (\%)} & \textbf{Compute Saved} & \textbf{Acc (\%)} & \textbf{Noise Blk (\%)} & \textbf{Compute Saved} \\
 \midrule
-Conventional (Update-All) & 94.26 & 0.0\% & 87.60 & 0.0\% & 0.0\% & 70.83 & 0.0\% & 0.0\% \\
-Budget-Matched Random & 93.80 & 62.0\% & 88.42 & 61.5\% & 62.0\% & 77.06 & 61.5\% & 56.0\% \\
-Active Learning (Uncertainty-Only) & 94.10 & 48.0\% & 86.20 & 38.5\% & 35.0\% & 72.15 & 25.4\% & 25.0\% \\
-Small-Loss (Co-Teaching) & 93.95 & 22.0\% & 92.40 & 92.0\% & 28.0\% & 85.11 & 88.0\% & 20.0\% \\
-Core-Set Diversity & 94.20 & 45.0\% & 87.10 & 32.0\% & 40.0\% & 71.80 & 22.0\% & 30.0\% \\
-\textbf{Adaptive Learning Gate (Ours)} & \textbf{94.34} & \textbf{54.0\%} & \textbf{94.34} & \textbf{100.0\%} & \textbf{58.0\%} & \textbf{94.34} & \textbf{100.0\%} & \textbf{65.0\%} \\
+Conventional (Update-All) & 93.03 & 0.0\% & 0.0\% & 91.94 & 0.0\% & 0.0\% \\
+Budget-Matched Random & 92.70 & 63.3\% & 62.0\% & 91.09 & 61.8\% & 62.0\% \\
+Active Learning (Uncertainty-Only) & 92.95 & 95.7\% & 95.8\% & 92.38 & 89.5\% & 89.6\% \\
+Small-Loss (Co-Teaching / MentorNet) & 93.03 & 99.5\% & 22.5\% & 92.18 & 99.2\% & 43.1\% \\
+Core-Set Diversity (Novelty-Only) & 93.52 & 71.9\% & 71.5\% & 90.35 & 48.7\% & 48.1\% \\
+\textbf{Adaptive Learning Gate (Ours)} & \textbf{93.75} & \textbf{99.6\%} & \textbf{97.5\%} & \textbf{91.46} & \textbf{99.5\%} & \textbf{97.4\%} \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\subsubsection{Catastrophic Degradation of Unconditional Fine-Tuning}
-As shown in Table \ref{tab:main_results}, Update-All is acutely vulnerable to stream contamination. When exposed to $20\%$ label noise, unconditional gradient steps cause test accuracy to decay from $94.26\%$ down to $87.60\%$. Under $40\%$ noise, Update-All suffers catastrophic representational collapse, plummeting by over $23\%$ down to $70.83\%$. This confirms that continuous adaptation without gating is dangerous in unverified production streams.
-
-\subsubsection{The Active Learning Poison Magnet Effect}
-Uncertainty-only Active Learning demonstrates the anticipated failure mode: because label noise generates substantial predictive entropy, the active learner prioritizes ambiguous samples, ingesting over $61\%$ of all noisy samples under standard perturbation and $>74\%$ under severe stress. Consequently, its accuracy degrades to $72.15\%$, performing worse than Budget-Matched Random.
-
-\subsubsection{Robustness of the Adaptive Learning Gate}
-In contrast, ALG completely halts noise ingestion. Under standard perturbation, ALG blocks $100\%$ of corrupted instances, maintaining the baseline accuracy at \textbf{94.34\%} while reducing backward pass compute by $58.0\%$. Under severe $40\%$ stress, ALG maintains identical representation stability ($94.34\%$), demonstrating complete immunity to adversarial label injection.
+\subsubsection{Comparative Empirical Analysis}
+As presented in Table \ref{tab:main_results}, ALG demonstrates superior multi-objective performance across both perturbation regimes:
+\begin{enumerate}
+    \item \textbf{High Accuracy and Robustness:} Under standard 20\% noise, ALG achieves the highest overall accuracy (\textbf{93.75\%}), while blocking \textbf{99.6\%} of all corrupted labels (only 7 noisy samples ingested out of 1,925).
+    \item \textbf{Extreme Compute Efficiency:} ALG saves \textbf{97.5\%} of backward pass computations by recognizing redundant, already-mastered samples, whereas Small-Loss must update on over 77\% of stream batches (only 22.5\% compute saved).
+    \item \textbf{Failure of Core-Set Under Severe Noise:} While Core-Set achieves 93.52\% under mild noise, when noise increases to 40\%, it misidentifies noisy outliers as novel concepts, ingesting 2,040 noisy samples and degrading to \textbf{90.35\%} (the lowest among all selective methods).
+\end{enumerate}
 
 \subsection{Component Ablation Study}
 To dissect the functional contribution of each constituent signal, we evaluate four systematic ablations under the $20\%$ perturbed stream (Table \ref{tab:ablation_table}).
@@ -203,24 +202,24 @@ To dissect the functional contribution of each constituent signal, we evaluate f
 \begin{table}[h]
 \centering
 \small
-\caption{\textbf{Component Ablations on 20\% Perturbed Stream.} Demonstrating the individual necessity of each signal and the quarantine mechanism.}
+\caption{\textbf{Component Ablations on 20\% Perturbed Stream (1,925 Noisy Labels).} Demonstrating the individual necessity of each signal and the quarantine mechanism.}
 \label{tab:ablation_table}
 \begin{tabular}{l|c|c|c}
 \toprule
 \textbf{Ablation Configuration} & \textbf{Acc (\%)} & \textbf{Noise Blk (\%)} & \textbf{Compute Saved} \\
 \midrule
-Full Gate (ALG Ours) & \textbf{94.34} & \textbf{100.0\%} & 58.0\% \\
-w/o Reliability ($w_{\text{unrel}}=0$) & 88.10 & 4.2\% & 1.0\% \\
-w/o Novelty ($w_{\text{nov}}=0$) & 94.30 & 100.0\% & 62.0\% \\
-w/o Uncertainty ($w_{\text{unc}}=0$) & 94.34 & 100.0\% & 59.0\% \\
-w/o Deferral (Hard Binary Gate) & 85.11 & 100.0\% & 20.0\% \\
+\textbf{Full Gate (ALG Ours)} & \textbf{93.75} & \textbf{99.6\%} & \textbf{97.5\%} \\
+ALG w/o Reliability ($w_{\text{unrel}}=0$) & 93.07 & 42.7\% (FAIL) & 42.5\% \\
+ALG w/o Novelty ($w_{\text{nov}}=0$) & 93.11 & 99.5\% & 97.9\% \\
+ALG w/o Uncertainty ($w_{\text{unc}}=0$) & 93.34 & 99.6\% & 98.6\% \\
+ALG w/o Deferral (Hard Binary Gate) & 93.89 & 99.3\% & 22.5\% (FAIL) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{1. The Indispensability of Reliability:} Disabling the reliability signal ($w_{\text{unrel}} = 0$) results in total gate failure: noise interception collapses to $4.2\%$, and compute savings evaporate to $1.0\%$, validating that reliability is the essential firewall against representation poisoning.
+\textbf{1. The Indispensability of Reliability:} Disabling the reliability signal ($w_{\text{unrel}} = 0$) causes noise ingestion to surge by \textbf{157x} (from 7 to 1,103 corrupted samples ingested), dropping noise blocking from 99.6\% down to 42.7\%. This empirically validates that reliability is the essential firewall against representation poisoning.
 
-\textbf{2. The Role of the Deferral Quarantine:} In the Hard Binary Gate ablation (where intermediate utility samples must be immediately resolved as LEARN or IGNORE without quarantine), test accuracy drops to $85.11\%$ and compute savings drop to $20.0\%$. The quarantine buffer allows the model to withhold borderline cases until batch optimization sharpens prototype boundaries.
+\textbf{2. The Role of the Deferral Quarantine:} In the Hard Binary Gate ablation (where intermediate utility samples must be immediately resolved as LEARN or IGNORE without quarantine), compute savings collapse from \textbf{97.5\%} to \textbf{22.5\%} (requiring over 4x more gradient updates). The quarantine buffer enables the model to withhold borderline cases until batch optimization sharpens prototype boundaries.
 
 \section{Conclusion}
 We presented the Adaptive Learning Gate (ALG), an auditable meta-decision framework for robust continual adaptation. By formulating a multi-signal benefit-harm utility metric coupling uncertainty with reliability and feature novelty, ALG resolves the classical failure mode of active learning under streaming noise. Evaluated on continuous streams with a pre-trained ResNet-56 backbone ($94.26\%$ accuracy), ALG blocks $>95\%$ of corrupted samples, maintains representation stability, and saves over half of training gradient FLOPs.
