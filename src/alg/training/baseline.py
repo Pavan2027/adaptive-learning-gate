@@ -51,14 +51,17 @@ def save_checkpoint(
     path = Path(filepath)
     path.parent.mkdir(parents=True, exist_ok=True)
 
+    model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
     state = {
         "epoch": epoch,
-        "model_state_dict": model.state_dict(),
+        "model_state_dict": model_state,
         "optimizer_state_dict": optimizer.state_dict() if optimizer is not None else None,
         "val_metrics": val_metrics or {},
         "config": config or {},
     }
     torch.save(state, path)
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     logger.debug("Checkpoint saved to '%s'.", path)
 
 
@@ -242,6 +245,8 @@ class BaselineTrainer:
                 max_batches=max_batches,
             )
 
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             epoch_time = time.time() - epoch_start
             epoch_log = {
                 "epoch": epoch,

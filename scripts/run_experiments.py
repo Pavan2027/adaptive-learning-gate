@@ -139,7 +139,12 @@ def run_single_experiment(
         load_checkpoint(ckpt, model, device=device)
     model.to(device)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.0002, weight_decay=0.0001)
+    stream_lr = (
+        method_cfg.get("lr")
+        or condition_cfg.get("lr")
+        or (1e-5 if architecture == "resnet18" else 0.0002)
+    )
+    optimizer = torch.optim.Adam(model.parameters(), lr=stream_lr, weight_decay=0.0001)
 
     # 4. Configure Policy and Trainer based on method
     m_type = method_cfg.get("type", "gated")
