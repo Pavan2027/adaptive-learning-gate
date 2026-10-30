@@ -233,3 +233,6 @@ agents/
 *.pth
 *.ckpt
 !research/data/
+
+# Research report and review presentation files
+research/report/
