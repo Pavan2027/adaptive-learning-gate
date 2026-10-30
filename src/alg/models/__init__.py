@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import torch.nn as nn
 
+from alg.models.cifar_resnet import CifarResNet56Backbone
 from alg.models.cnn import CompactCNN
 from alg.models.mlp import ModularMLP
 from alg.models.resnet import ResNet18Backbone
@@ -31,14 +32,14 @@ def build_model(
     Factory function to instantiate models.
 
     Args:
-        architecture: 'cnn', 'mlp', or 'resnet18'.
+        architecture: 'cnn', 'mlp', 'resnet18', or 'resnet56'.
         num_classes: Number of target classification categories.
         in_channels: Number of input image channels (1 for grayscale, 3 for RGB).
         image_size: Tuple (height, width) of input images.
         hidden_dims: List of hidden dimensions for MLP architecture.
         dropout: Dropout probability.
-        pretrained: Load ImageNet pre-trained weights for ResNet-18 (default True).
-        freeze_backbone: Freeze backbone parameters for ResNet-18 linear probing.
+        pretrained: Load pre-trained weights for ResNet-18/56 (default True).
+        freeze_backbone: Freeze backbone parameters for linear probing.
 
     Returns:
         Instantiated nn.Module ready for training.
@@ -64,11 +65,23 @@ def build_model(
             pretrained=pretrained,
             freeze_backbone=freeze_backbone,
         )
+    elif arch in ("resnet56", "cifar_resnet56", "cifar10_resnet56", "cifar100_resnet56"):
+        return CifarResNet56Backbone(
+            num_classes=num_classes,
+            pretrained=pretrained,
+            freeze_backbone=freeze_backbone,
+        )
     else:
         raise ValueError(
             f"Unknown architecture '{architecture}'. "
-            f"Supported architectures: ['cnn', 'mlp', 'resnet18']."
+            f"Supported architectures: ['cnn', 'mlp', 'resnet18', 'resnet56']."
         )
 
 
-__all__ = ["CompactCNN", "ModularMLP", "ResNet18Backbone", "build_model"]
+__all__ = [
+    "CompactCNN",
+    "ModularMLP",
+    "ResNet18Backbone",
+    "CifarResNet56Backbone",
+    "build_model",
+]

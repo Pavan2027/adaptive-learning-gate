@@ -233,3 +233,123 @@ class RandomGatePolicy:
             reason_detail=detail,
             signals=signals,
         )
+
+
+class SmallLossGatePolicy:
+    """
+    Literature Baseline: Small-Loss Selection Criterion.
+
+    Reference:
+        Han et al., "Co-teaching: Robust Training of Deep Neural Networks with
+        Extremely Noisy Labels", NeurIPS 2018; Jiang et al., "MentorNet", ICML 2018.
+
+    Mechanism:
+        Leverages the deep neural network 'memorization effect' (Arpit et al., 2017):
+        clean patterns are fitted before noisy labels. Samples exhibiting low loss
+        (represented by high prediction agreement and reliability R_t) are accepted;
+        high-loss samples are rejected as suspected label noise.
+    """
+
+    def __init__(self, reliability_threshold: float = 0.60) -> None:
+        self.reliability_threshold = reliability_threshold
+
+    def evaluate(
+        self,
+        signals: SignalScores,
+        sample_id: str = "sample_000000",
+        stream_index: int = 0,
+    ) -> GateDecision:
+        r = signals.reliability
+        if not math.isfinite(r):
+            return GateDecision(
+                sample_id=sample_id,
+                stream_index=stream_index,
+                action=GateAction.IGNORE,
+                utility=0.0,
+                benefit=0.0,
+                harm=1.0,
+                reason=ReasonCode.FALLBACK_SAFE,
+                reason_detail="Non-finite reliability signal encountered.",
+                signals=signals,
+            )
+
+        if r >= self.reliability_threshold:
+            action = GateAction.LEARN
+            reason = ReasonCode.SMALL_LOSS_SELECTED
+            detail = f"Reliability {r:.3f} >= threshold {self.reliability_threshold:.3f} (Small-Loss accepted)."
+        else:
+            action = GateAction.IGNORE
+            reason = ReasonCode.SMALL_LOSS_REJECTED
+            detail = f"Reliability {r:.3f} < threshold {self.reliability_threshold:.3f} (High-Loss rejected)."
+
+        return GateDecision(
+            sample_id=sample_id,
+            stream_index=stream_index,
+            action=action,
+            utility=r,
+            benefit=r,
+            harm=1.0 - r,
+            reason=reason,
+            reason_detail=detail,
+            signals=signals,
+        )
+
+
+class CoreSetGatePolicy:
+    """
+    Literature Baseline: Core-Set Diversity Active Learning.
+
+    Reference:
+        Sener & Savarese, "Active Learning for Convolutional Neural Networks:
+        A Core-Set Approach", ICLR 2018.
+
+    Mechanism:
+        Selects samples that maximize geometric coverage in latent representation
+        space by selecting candidates with high novelty N_t (distance to nearest
+        established prototype). Unchecked by reliability, this baseline can be
+        vulnerable to selecting noisy outliers.
+    """
+
+    def __init__(self, novelty_threshold: float = 0.40) -> None:
+        self.novelty_threshold = novelty_threshold
+
+    def evaluate(
+        self,
+        signals: SignalScores,
+        sample_id: str = "sample_000000",
+        stream_index: int = 0,
+    ) -> GateDecision:
+        n = signals.novelty
+        if not math.isfinite(n):
+            return GateDecision(
+                sample_id=sample_id,
+                stream_index=stream_index,
+                action=GateAction.IGNORE,
+                utility=0.0,
+                benefit=0.0,
+                harm=1.0,
+                reason=ReasonCode.FALLBACK_SAFE,
+                reason_detail="Non-finite novelty signal encountered.",
+                signals=signals,
+            )
+
+        if n >= self.novelty_threshold:
+            action = GateAction.LEARN
+            reason = ReasonCode.CORESET_SELECTED
+            detail = f"Novelty {n:.3f} >= threshold {self.novelty_threshold:.3f} (Core-Set selected)."
+        else:
+            action = GateAction.IGNORE
+            reason = ReasonCode.CORESET_REJECTED
+            detail = f"Novelty {n:.3f} < threshold {self.novelty_threshold:.3f} (Core-Set redundant)."
+
+        return GateDecision(
+            sample_id=sample_id,
+            stream_index=stream_index,
+            action=action,
+            utility=n,
+            benefit=n,
+            harm=0.0,
+            reason=reason,
+            reason_detail=detail,
+            signals=signals,
+        )

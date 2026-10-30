@@ -1,0 +1,130 @@
+# Comprehensive Research Paper Benchmark Configuration Matrix
+# Benchmark: CIFAR-10 Continuous Stream Learning with ResNet-56 (Initial Baseline Acc: 94.26%)
+# Includes 5 Peer-Reviewed Literature Baselines + 4 Systematic Component Ablations
+
+meta:
+  benchmark: "CIFAR-10 Continual Stream Benchmark (ResNet-56)"
+  architecture: "resnet56"
+  dataset: "cifar10"
+  baseline_checkpoint: ""  # Uses torchvision/hub pretrained weights automatically
+  output_dir: "results/experiments/paper_benchmark"
+  seeds: [42, 43, 44]
+  default_stream_size: 10000
+  default_batch_size: 64
+  stream_lr: 0.0003
+
+# ── Stream Noise & Corruption Regimes ────────────────────────────────────────
+conditions:
+  clean_stream:
+    name: "Clean Stream"
+    label_noise_rate: 0.0
+    feature_corruption_rate: 0.0
+    redundancy_rate: 0.0
+    description: "Uncorrupted continual stream assessing representation retention, plasticity, and sample efficiency."
+
+  noisy_stream:
+    name: "Adversarial Perturbed Stream (20% Noise)"
+    label_noise_rate: 0.20
+    feature_corruption_rate: 0.10
+    redundancy_rate: 0.0
+    description: "Standard benchmark condition with 20% random label corruption and 10% Gaussian feature noise."
+
+  high_noise_stream:
+    name: "Severe Perturbed Stream (40% Noise)"
+    label_noise_rate: 0.40
+    feature_corruption_rate: 0.15
+    redundancy_rate: 0.0
+    description: "Extreme stress condition with 40% label corruption testing gate robustness and failure modes."
+
+# ── Primary Comparative Literature Baselines ─────────────────────────────────
+methods:
+  update_all:
+    name: "Conventional (Update-All)"
+    type: "conventional"
+    description: "Unconditional streaming fine-tuning updating on all incoming stream instances (Lange et al., TPAMI 2022)."
+
+  random:
+    name: "Budget-Matched Random"
+    type: "random"
+    budget_rate: 0.38
+    description: "Uniform random selection matched to the average sample budget of ALG (Settles, 2009)."
+
+  uncertainty_only:
+    name: "Active Learning (Uncertainty-Only)"
+    type: "uncertainty_only"
+    threshold: 0.35
+    description: "Predictive entropy active learning selecting samples with highest Shannon entropy (Lewis & Gale, SIGIR 1994)."
+
+  small_loss:
+    name: "Small-Loss (Co-Teaching / MentorNet)"
+    type: "small_loss"
+    threshold: 0.60
+    description: "Loss-based filtering admitting samples with low cross-entropy / high reliability (Han et al., NeurIPS 2018; Jiang et al., ICML 2018)."
+
+  coreset:
+    name: "Core-Set Diversity (Novelty-Only)"
+    type: "coreset"
+    threshold: 0.40
+    description: "Geometric core-set active learning selecting points distant from existing prototypes (Sener & Savarese, ICLR 2018)."
+
+  gated_full:
+    name: "Adaptive Learning Gate (ALG Ours)"
+    type: "gated"
+    learn_threshold: 0.44
+    ignore_threshold: 0.30
+    w_novelty: 0.5
+    w_uncertainty: 0.5
+    w_unreliability: 0.8
+    w_redundancy: 0.2
+    defer_queue_capacity: 500
+    recheck_interval: 2
+    recheck_batch_size: 64
+    description: "Proposed benefit-harm utility gate with epistemic uncertainty, prototype novelty, label reliability, and quarantine deferral."
+
+# ── Systematic Component Ablations ───────────────────────────────────────────
+ablations:
+  ablation_no_reliability:
+    name: "ALG w/o Reliability (w_unrel=0)"
+    type: "gated"
+    learn_threshold: 0.44
+    ignore_threshold: 0.30
+    w_novelty: 0.5
+    w_uncertainty: 0.5
+    w_unreliability: 0.0
+    w_redundancy: 0.2
+    use_reliability_coupling: false
+    description: "Disables label reliability checks; reveals susceptibility to noisy sample poisoning."
+
+  ablation_no_novelty:
+    name: "ALG w/o Novelty (w_nov=0)"
+    type: "gated"
+    learn_threshold: 0.44
+    ignore_threshold: 0.30
+    w_novelty: 0.0
+    w_uncertainty: 0.5
+    w_unreliability: 0.8
+    w_redundancy: 0.2
+    description: "Removes prototype distance from benefit computation; tests impact on out-of-distribution coverage."
+
+  ablation_no_uncertainty:
+    name: "ALG w/o Uncertainty (w_unc=0)"
+    type: "gated"
+    learn_threshold: 0.44
+    ignore_threshold: 0.30
+    w_novelty: 0.5
+    w_uncertainty: 0.0
+    w_unreliability: 0.8
+    w_redundancy: 0.2
+    description: "Removes predictive entropy; evaluates gating without epistemic boundary signals."
+
+  ablation_no_defer:
+    name: "ALG w/o Deferral (Hard Binary Gate)"
+    type: "gated"
+    learn_threshold: 0.37
+    ignore_threshold: 0.37
+    allow_no_defer: true
+    w_novelty: 0.5
+    w_uncertainty: 0.5
+    w_unreliability: 0.8
+    w_redundancy: 0.2
+    description: "Binary gate forcing immediate LEARN or IGNORE decisions with no episodic quarantine buffer."

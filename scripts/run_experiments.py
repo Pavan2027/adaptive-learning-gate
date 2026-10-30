@@ -54,8 +54,10 @@ from alg.data.datasets import get_dataset_metadata, load_raw_dataset
 from alg.data.stream import StreamSimulator
 from alg.gating import (
     AdaptiveLearningGate,
+    CoreSetGatePolicy,
     RandomGatePolicy,
     RuleBasedGatePolicy,
+    SmallLossGatePolicy,
     UncertaintyGatePolicy,
 )
 from alg.models import build_model
@@ -134,15 +136,14 @@ def run_single_experiment(
         in_channels=meta.in_channels,
         pretrained=True,
     )
-    ckpt = Path(checkpoint_path)
-    if ckpt.exists():
-        load_checkpoint(ckpt, model, device=device)
+    if checkpoint_path and Path(checkpoint_path).is_file():
+        load_checkpoint(Path(checkpoint_path), model, device=device)
     model.to(device)
 
     stream_lr = (
         method_cfg.get("lr")
         or condition_cfg.get("lr")
-        or (1e-5 if architecture == "resnet18" else 0.0002)
+        or (1e-5 if architecture == "resnet18" else 0.0003)
     )
     optimizer = torch.optim.Adam(model.parameters(), lr=stream_lr, weight_decay=0.0001)
 
@@ -181,6 +182,12 @@ def run_single_experiment(
             gate = AdaptiveLearningGate(policy=policy, defer_queue_capacity=0)
         elif m_type == "uncertainty_only":
             policy = UncertaintyGatePolicy(uncertainty_threshold=method_cfg.get("threshold", 0.35))
+            gate = AdaptiveLearningGate(policy=policy, defer_queue_capacity=0)
+        elif m_type == "small_loss":
+            policy = SmallLossGatePolicy(reliability_threshold=method_cfg.get("threshold", 0.60))
+            gate = AdaptiveLearningGate(policy=policy, defer_queue_capacity=0)
+        elif m_type == "coreset":
+            policy = CoreSetGatePolicy(novelty_threshold=method_cfg.get("threshold", 0.40))
             gate = AdaptiveLearningGate(policy=policy, defer_queue_capacity=0)
         else:
             # Gated ALG or Ablations
@@ -284,9 +291,13 @@ def main() -> None:
     exp_cfg = _load_experiments_config(args.config)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    ckpt_path = args.checkpoint or exp_cfg["meta"]["baseline_checkpoint"]
+    ckpt_path = args.checkpoint if args.checkpoint is not None else exp_cfg["meta"].get("baseline_checkpoint", "")
     out_dir = Path(exp_cfg["meta"]["output_dir"])
-    dataset_name = args.dataset or exp_cfg["meta"].get("dataset_name", "cifar10")
+    dataset_name = (
+        args.dataset
+        or exp_cfg["meta"].get("dataset")
+        or exp_cfg["meta"].get("dataset_name", "cifar10")
+    )
     dataset_root = exp_cfg["meta"].get("dataset_root", "data/")
     architecture = args.architecture or exp_cfg["meta"].get("architecture", "cnn")
 

@@ -31,6 +31,10 @@ class ReasonCode(str, Enum):
     LOW_UNCERTAINTY = "LOW_UNCERTAINTY"        # Uncertainty-only active learning rejection
     RANDOM_SELECTED = "RANDOM_SELECTED"        # Random baseline selection
     RANDOM_SKIPPED = "RANDOM_SKIPPED"          # Random baseline rejection
+    SMALL_LOSS_SELECTED = "SMALL_LOSS_SELECTED"  # Co-Teaching / MentorNet small-loss selection
+    SMALL_LOSS_REJECTED = "SMALL_LOSS_REJECTED"  # Co-Teaching / MentorNet high-loss rejection
+    CORESET_SELECTED = "CORESET_SELECTED"      # Core-Set diversity selection (high novelty)
+    CORESET_REJECTED = "CORESET_REJECTED"      # Core-Set diversity rejection (low novelty)
 
 
 @dataclass

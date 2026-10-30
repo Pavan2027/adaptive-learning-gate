@@ -30,13 +30,15 @@ logger = logging.getLogger(__name__)
 
 # Curated academic publication palette
 PALETTE = {
-    "gated_full": "#1f77b4",            # Strong Blue (Ours)
+    "gated_full": "#1f77b4",            # Strong Blue (ALG Ours)
     "update_all": "#d62728",            # Crimson Red (Conventional)
     "uncertainty_only": "#ff7f0e",      # Amber Orange (Active Learning)
     "random": "#7f7f7f",                # Neutral Gray (Random)
+    "small_loss": "#2ca02c",            # Forest Green (Co-Teaching / Small Loss)
+    "coreset": "#9467bd",               # Deep Purple (Core-Set Diversity)
     "ablation_no_reliability": "#e377c2", # Pink (No Reliability)
-    "ablation_no_uncertainty": "#2ca02c", # Emerald Green (No Uncertainty)
-    "ablation_no_novelty": "#9467bd",   # Purple (No Novelty)
+    "ablation_no_uncertainty": "#17becf", # Cyan (No Uncertainty)
+    "ablation_no_novelty": "#bcbd22",   # Olive (No Novelty)
     "ablation_no_defer": "#8c564b",     # Brown (Hard Gate)
 }
 
@@ -45,6 +47,8 @@ METHOD_LABELS = {
     "update_all": "Conventional (Update-All)",
     "uncertainty_only": "Active Learning (Uncertainty-Only)",
     "random": "Budget-Matched Random",
+    "small_loss": "Small-Loss (Co-Teaching, NeurIPS '18)",
+    "coreset": "Core-Set Diversity (ICLR '18)",
     "ablation_no_reliability": "ALG w/o Reliability",
     "ablation_no_uncertainty": "ALG w/o Uncertainty",
     "ablation_no_novelty": "ALG w/o Novelty",
@@ -321,11 +325,12 @@ def main() -> None:
 
     # Mirror to research/plots
     if args.copy_to_research:
-        research_plots = Path("research/plots")
-        research_plots.mkdir(parents=True, exist_ok=True)
-        for fig in generated_figures:
-            shutil.copy2(fig, research_plots / fig.name)
-        logger.info("Successfully mirrored %d figures to %s", len(generated_figures), research_plots)
+        research_plots = Path("research/plots").resolve()
+        if output_path.resolve() != research_plots:
+            research_plots.mkdir(parents=True, exist_ok=True)
+            for fig in generated_figures:
+                shutil.copy2(fig, research_plots / fig.name)
+            logger.info("Successfully mirrored %d figures to %s", len(generated_figures), research_plots)
 
     print("\n" + "=" * 70)
     print("   Adaptive Learning Gate — Figures Successfully Generated")
